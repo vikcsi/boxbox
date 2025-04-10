@@ -1,1 +1,26 @@
-<p>menu works!</p>
+<mat-nav-list>
+  <a mat-list-item routerLink="/home" routerLinkActive="active-list-item" (click)="closeMenu()">
+    <mat-icon matListItemIcon>home</mat-icon>
+    <span matListItemTitle>Home</span>
+  </a>
+  <a mat-list-item routerLink="/board" routerLinkActive="active-list-item" (click)="closeMenu()">
+    <mat-icon matListItemIcon>emoji_events</mat-icon>
+    <span matListItemTitle>Standings</span>
+  </a>
+  <a mat-list-item routerLink="/drivers" routerLinkActive="active-list-item" (click)="closeMenu()">
+    <mat-icon matListItemIcon>sports_motorsports</mat-icon>
+    <span matListItemTitle>Drivers</span>
+  </a>
+  <a mat-list-item routerLink="/teams" routerLinkActive="active-list-item" (click)="closeMenu()">
+    <mat-icon matListItemIcon>directions_car</mat-icon>
+    <span matListItemTitle>Teams</span>
+  </a>
+  <a mat-list-item routerLink="/tracks" routerLinkActive="active-list-item" (click)="closeMenu()">
+    <mat-icon matListItemIcon>place</mat-icon>
+    <span matListItemTitle>Tracks</span>
+  </a>
+  <a mat-list-item routerLink="/profile" routerLinkActive="active-list-item" (click)="closeMenu()">
+    <mat-icon matListItemIcon>face</mat-icon>
+    <span matListItemTitle>Profile</span>
+  </a>  
+</mat-nav-list>

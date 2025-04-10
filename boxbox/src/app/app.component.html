@@ -1,8 +1,43 @@
-<app-menu></app-menu>
-<app-home></app-home>
-<app-drivers></app-drivers>
-<app-teams></app-teams>
-<app-tracks></app-tracks>
-<app-board></app-board>
-<app-profile></app-profile>
-<!-- <router-outlet />-->
+<mat-sidenav-container>
+  <mat-sidenav #sidenav position="end">
+    <app-menu [sidenav]="sidenav" [isLoggedIn]="isLoggedIn" (logoutEvent)="logout()"></app-menu>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar>
+      
+      <div class="toolbar-container">
+        <div class="logo-section">
+          <a routerLink="/home" id="title">BoxBox!</a>
+        </div>
+        
+        @if (isLoggedIn) {
+        <nav class="navigation-section">
+          <ul>
+            <li><a routerLink="/board">Standings</a></li>
+            <li><a routerLink="/drivers">Drivers</a></li>
+            <li><a routerLink="/teams">Teams</a></li>
+            <li><a routerLink="/tracks">Tracks</a></li>
+            <li><a routerLink="/profile">Profile</a></li>
+          </ul>
+        </nav>
+      }
+
+        <div class="login-section">
+          @if (!isLoggedIn) {
+          <a routerLink="/login">Login</a>
+          }
+          @if (isLoggedIn) {
+            <a href="#" (click)="$event.preventDefault(); logout()">Logout</a>
+          <button 
+            mat-button 
+            (click)="onToggleSidenav(sidenav)"
+            class="menu-toggle-button">
+            <mat-icon>menu</mat-icon>
+          </button>
+        }
+        </div>
+      </div>
+    </mat-toolbar>
+    <router-outlet />
+  </mat-sidenav-content>
+</mat-sidenav-container>

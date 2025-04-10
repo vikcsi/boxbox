@@ -1,4 +1,34 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
+@use '@angular/material' as mat;
+@use '_theme-colors' as my-theme;
+
+html, body { 
+    height: 100%;
+    @include mat.theme((
+        color: (
+          primary: my-theme.$primary-palette,
+          tertiary: my-theme.$tertiary-palette,
+        )
+      ));
+}
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+    color: #8d0000;
+    
+    h2 {
+      margin-bottom: 20px;
+    }
+    
+    p {
+      margin-top: 20px;
+      font-size: 16px;
+    }
+  }

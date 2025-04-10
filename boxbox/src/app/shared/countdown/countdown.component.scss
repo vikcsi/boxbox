@@ -1,0 +1,10 @@
+.countdown-container {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+
+    .time-unit {
+        flex: 1;
+    }
+}

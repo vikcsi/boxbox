@@ -1,0 +1,24 @@
+<div class="countdown-container">
+    <div *ngIf="!isRaceTime" class="countdown">
+      <div class="time-unit">
+        <span class="number">{{ days | countdownFormat:'days':true:false }}</span>
+        <span class="label">{{ days === 1 ? ' day' : ' days' }}</span>
+      </div>
+      <div class="time-unit">
+        <span class="number">{{ hours | countdownFormat:'hours':true:false }}</span>
+        <span class="label"> hours</span>
+      </div>
+      <div class="time-unit">
+        <span class="number">{{ minutes | countdownFormat:'minutes':true:false }}</span>
+        <span class="label"> min</span>
+      </div>
+      <div class="time-unit">
+        <span class="number">{{ seconds | countdownFormat:'seconds':true:false }}</span>
+        <span class="label"> sec</span>
+      </div>
+    </div>
+    
+    <div *ngIf="isRaceTime" class="race-time">
+      <h2>{{ raceTimeMessage }}</h2>
+    </div>
+  </div>

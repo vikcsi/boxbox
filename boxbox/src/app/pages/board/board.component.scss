@@ -1,0 +1,33 @@
+div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.button-group {
+    margin-top: 50px;
+      
+      mat-button-toggle {
+        width: 150px; 
+      }
+
+      ::ng-deep {
+        .mat-button-toggle {
+          color: #ffffff;
+          font-size: 16px;
+          font-weight: 500;
+          border-color: #ffffff;
+        }
+
+        .mat-button-toggle-checked {
+            color: #7e0000;
+          }
+      }
+      
+      
+}
+
+.content {
+    color: #ffffff;
+}

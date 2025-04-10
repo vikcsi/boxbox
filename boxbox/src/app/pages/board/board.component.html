@@ -1,1 +1,16 @@
-<p>board works!</p>
+<div class="button-group">
+    <mat-button-toggle-group [value]="selectedState" (change)="onChange($event)">
+        <mat-button-toggle [value]="toggleEnum.Driver">Driver</mat-button-toggle>
+        <mat-button-toggle [value]="toggleEnum.Constructor">Constructor</mat-button-toggle>
+    </mat-button-toggle-group>
+</div>
+<br>
+<div class="content">
+    @if (selectedState === toggleEnum.null) {
+        <div>check the standings!</div>
+    } @else if (selectedState === toggleEnum.Driver) {
+        <div>driver</div>
+    } @else if (selectedState === toggleEnum.Constructor) {
+        <div>const</div>
+    }
+</div>

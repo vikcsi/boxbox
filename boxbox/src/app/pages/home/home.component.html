@@ -1,1 +1,31 @@
-<p>home works!</p>
+<div class="first-cards">
+<mat-card class="container">
+    <h1>Race Countdown Timer</h1>
+    
+    <app-countdown 
+      [targetDates]="raceDates" 
+      [restartDelay]="10000"
+      raceTimeMessage="It's race time!"
+      #countdownRef>
+    </app-countdown>
+    
+    <div class="text-countdown">
+        <p>Time until the next race: {{ countdownRef.getFormattedCountdown() }}</p>
+      </div>
+</mat-card>
+<mat-card class="container">
+    
+</mat-card>
+</div>
+<div class="second-cards">
+    <mat-card class="container">
+        <div class="flex-container">
+        <div class="text-content">
+            <p>{{dailyFact}}</p>
+        </div>
+        <div class="image-content">
+            <img mat-card-image src="images/homepgimg.jpg">
+        </div>
+    </div>
+    </mat-card>
+</div>
