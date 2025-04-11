@@ -1,1 +1,29 @@
-<p>teams works!</p>
+<div class="drivers-container">
+    <h1>Formula 1 Teams</h1>
+    
+      <div class="drivers-grid">
+        @for (team of teams; track team.teamID) {
+          <mat-card class="driver-card">
+            <mat-card-header>
+              <mat-card-title>{{ team.name }}</mat-card-title>
+              <mat-card-subtitle></mat-card-subtitle>
+            </mat-card-header>
+            
+            <mat-card-content>
+              <div class="driver-info">
+                <p><strong>Base:</strong> {{ team.base }}</p>
+                <p><strong>Principal:</strong> {{ team.principal }}</p>
+                <p><strong>Driver1:</strong> {{ getDriver(team.driverIDs[0]) }}</p>
+                <p><strong>Driver2:</strong> {{ getDriver(team.driverIDs[1]) }}</p>
+              </div>
+            </mat-card-content>
+
+          </mat-card>
+        } @empty {
+          <div class="no-data">
+            <p>There are no teams in the database.</p>
+          </div>
+        }
+      </div>
+    
+  </div>

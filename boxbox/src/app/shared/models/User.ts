@@ -1,6 +1,3 @@
-import { Driver } from "./Driver";
-import { Team } from "./Team";
-
 export interface User {
     name: {
       firstname: string;
@@ -8,4 +5,6 @@ export interface User {
     };
     email: string;
     password: string;
+    favDriverID : number;
+    favTeamID: number;
   }

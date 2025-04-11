@@ -1,0 +1,72 @@
+[
+  {
+    "teamID": "rb",
+    "name": "Red Bull Racing",
+    "base": "Milton Keynes, UK",
+    "principal": "Christian Horner",
+    "driverIDs": ["mv1", "yt22"]
+  },
+  {
+    "teamID": "ferr",
+    "name": "Ferrari",
+    "base": "Maranello, Italy",
+    "principal": "Frédéric Vasseur",
+    "driverIDs": ["cl16", "lh44"]
+  },
+  {
+    "teamID": "merc",
+    "name": "Mercedes",
+    "base": "Brackley, UK",
+    "principal": "Toto Wolff",
+    "driverIDs": ["gr63", "aka12"]
+  },
+  {
+    "teamID": "mcl",
+    "name": "McLaren",
+    "base": "Woking, UK",
+    "principal": "Andrea Stella",
+    "driverIDs": ["ln4", "op81"]
+  },
+  {
+    "teamID": "am",
+    "name": "Aston Martin",
+    "base": "Silverstone, UK",
+    "principal": "Mike Krack",
+    "driverIDs": ["fa14", "ls18"]
+  },
+  {
+    "teamID": "alpine",
+    "name": "Alpine",
+    "base": "Enstone, UK",
+    "principal": "Bruno Famin",
+    "driverIDs": ["pg10", "jd7"]
+  },
+  {
+    "teamID": "vcarb",
+    "name": "Racing Bulls",
+    "base": "Faenza, Italy",
+    "principal": "Laurent Mekies",
+    "driverIDs": ["ih6", "ll30"]
+  },
+  {
+    "teamID": "kick",
+    "name": "Kick Sauber",
+    "base": "Hinwil, Switzerland",
+    "principal": "Alessandro Alunni Bravi",
+    "driverIDs": ["nh27", "gb5"]
+  },
+  {
+    "teamID": "haas",
+    "name": "Haas",
+    "base": "Kannapolis, USA",
+    "principal": "Ayao Komatsu",
+    "driverIDs": ["ob87", "eo31"]
+  },
+  {
+    "teamID": "will",
+    "name": "Williams",
+    "base": "Grove, UK",
+    "principal": "James Vowles",
+    "driverIDs": ["aa23", "cs55"]
+  }
+]

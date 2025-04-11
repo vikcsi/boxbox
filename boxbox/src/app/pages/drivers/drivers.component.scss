@@ -1,0 +1,47 @@
+.drivers-container {
+    padding: 16px;
+    
+    h1 {
+      margin-bottom: 24px;
+      text-align: center;
+    }
+  }
+  
+  .loading-container, .error-container, .no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 32px 0;
+    
+    p {
+      margin-top: 16px;
+    }
+  }
+  
+  .drivers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  
+  .driver-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    
+    mat-card-content {
+      flex-grow: 1;
+    }
+    
+    .driver-info {
+      margin-top: 16px;
+    }
+  }
+  
+  // Reszponzív design
+  @media (max-width: 599px) {
+    .drivers-grid {
+      grid-template-columns: 1fr;
+    }
+  }

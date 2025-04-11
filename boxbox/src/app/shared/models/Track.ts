@@ -1,9 +1,9 @@
 export interface Track {
-    trackId: number;
-    name: string;
+    trackID: string;
+    trackName: string;
     country: string;
     length: number;
     lapNumber: number;
     raceDist: number;
-    date: Date;
+    date: string;
 }

@@ -1,0 +1,218 @@
+[
+  {
+    "trackId": "aus",
+    "trackName": "Albert Park Grand Prix Circuit",
+    "country": "Australia",
+    "length": 5.278,
+    "lapNumber": 58,
+    "raceDist": 306.124,
+    "date": "2025.03.16."
+  },
+  {
+    "trackId": "chn",
+    "trackName": "Shanghai International Circuit",
+    "country": "China",
+    "length": 5.451,
+    "lapNumber": 56,
+    "raceDist": 305.066,
+    "date": "2025.03.23."
+  },
+  {
+    "trackId": "jpn",
+    "trackName": "Suzuka Circuit",
+    "country": "Japan",
+    "length": 5.807,
+    "lapNumber": 53,
+    "raceDist": 307.471,
+    "date": "2025.04.06."
+  },
+  {
+    "trackId": "bhr",
+    "trackName": "Bahrain International Circuit",
+    "country": "Bahrain",
+    "length": 5.412,
+    "lapNumber": 57,
+    "raceDist": 308.238,
+    "date": "2025.04.13."
+  },
+  {
+    "trackId": "sau",
+    "trackName": "Jeddah Corniche Circuit",
+    "country": "Saudi Arabia",
+    "length": 6.174,
+    "lapNumber": 50,
+    "raceDist": 308.45,
+    "date": "2025.04.18."
+  },
+  {
+    "trackId": "mia",
+    "trackName": "Miami International Autodrome",
+    "country": "USA",
+    "length": 5.412,
+    "lapNumber": 57,
+    "raceDist": 308.326,
+    "date": "2025.05.04."
+  },
+  {
+    "trackId": "ita",
+    "trackName": "Autodromo Internazionale Enzo e Dino Ferrari",
+    "country": "Italy",
+    "length": 4.909,
+    "lapNumber": 63,
+    "raceDist": 309.049,
+    "date": "2025.05.18."
+  },
+  {
+    "trackId": "mon",
+    "trackName": "Circuit de Monaco",
+    "country": "Monaco",
+    "length": 3.337,
+    "lapNumber": 78,
+    "raceDist": 260.286,
+    "date": "2025.05.25."
+  },
+  {
+    "trackId": "esp",
+    "trackName": "Circuit de Barcelona-Catalunya",
+    "country": "Spain",
+    "length": 4.675,
+    "lapNumber": 66,
+    "raceDist": 308.424,
+    "date": "2025.06.01."
+  },
+  {
+    "trackId": "can",
+    "trackName": "Circuit Gilles-Villeneuve",
+    "country": "Canada",
+    "length": 4.361,
+    "lapNumber": 70,
+    "raceDist": 305.27,
+    "date": "2025.06.15."
+  },
+  {
+    "trackId": "aut",
+    "trackName": "Red Bull Ring",
+    "country": "Austria",
+    "length": 4.318,
+    "lapNumber": 71,
+    "raceDist": 306.452,
+    "date": "2025.06.29."
+  },
+  {
+    "trackId": "gbr",
+    "trackName": "Silverstone Circuit",
+    "country": "UK",
+    "length": 5.891,
+    "lapNumber": 52,
+    "raceDist": 306.198,
+    "date": "2025.07.06."
+  },
+  {
+    "trackId": "bel",
+    "trackName": "Circuit de Spa-Francorchamps",
+    "country": "Belgium",
+    "length": 7.004,
+    "lapNumber": 44,
+    "raceDist": 308.052,
+    "date": "2025.07.27."
+  },
+  {
+    "trackId": "hun",
+    "trackName": "Hungaroring",
+    "country": "Hungary",
+    "length": 4.381,
+    "lapNumber": 70,
+    "raceDist": 306.63,
+    "date": "2025.08.03."
+  },
+  {
+    "trackId": "nld",
+    "trackName": "Circuit Zandvoort",
+    "country": "Netherlands",
+    "length": 4.259,
+    "lapNumber": 72,
+    "raceDist": 306.648,
+    "date": "2025.08.31."
+  },
+  {
+    "trackId": "ita",
+    "trackName": "Autodromo Nazionale Monza",
+    "country": "Italy",
+    "length": 5.793,
+    "lapNumber": 53,
+    "raceDist": 306.72,
+    "date": "2025.09.07."
+  },
+  {
+    "trackId": "aze",
+    "trackName": "Baku City Circuit",
+    "country": "Azerbaijan",
+    "length": 6.003,
+    "lapNumber": 51,
+    "raceDist": 306.049,
+    "date": "2025.09.21."
+  },
+  {
+    "trackId": "sgp",
+    "trackName": "Marina Bay Street Circuit",
+    "country": "Singapore",
+    "length": 5.063,
+    "lapNumber": 62,
+    "raceDist": 313.706,
+    "date": "2025.10.05."
+  },
+  {
+    "trackId": "usa",
+    "trackName": "Circuit of the Americas",
+    "country": "USA",
+    "length": 5.513,
+    "lapNumber": 56,
+    "raceDist": 308.405,
+    "date": "2025.10.19."
+  },
+  {
+    "trackId": "mex",
+    "trackName": "Autódromo Hermanos Rodríguez",
+    "country": "Mexico",
+    "length": 4.304,
+    "lapNumber": 71,
+    "raceDist": 305.354,
+    "date": "2025.10.26."
+  },
+  {
+    "trackId": "bra",
+    "trackName": "Autódromo José Carlos Pace",
+    "country": "Brazil",
+    "length": 4.309,
+    "lapNumber": 71,
+    "raceDist": 305.909,
+    "date": "2025.11.09."
+  },
+  {
+    "trackId": "lvs",
+    "trackName": "Las Vegas Strip Circuit",
+    "country": "USA",
+    "length": 6.12,
+    "lapNumber": 50,
+    "raceDist": 306.0,
+    "date": "2025.11.22."
+  },
+  {
+    "trackId": "qat",
+    "trackName": "Lusail International Circuit",
+    "country": "Qatar",
+    "length": 5.419,
+    "lapNumber": 57,
+    "raceDist": 308.973,
+    "date": "2025.11.30."
+  },
+  {
+    "trackId": "uae",
+    "trackName": "Yas Marina Circuit",
+    "country": "UAE",
+    "length": 5.281,
+    "lapNumber": 58,
+    "raceDist": 306.183,
+    "date": "2025.12.07."
+  }
+]

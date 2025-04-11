@@ -65,6 +65,8 @@ export class SignupComponent {
       },
       email: this.signUpForm.value.email || '',
       password: this.signUpForm.value.password || '',
+      favDriverID: 0,
+      favTeamID: 0
     };
 
     console.log('New user:', newUser);

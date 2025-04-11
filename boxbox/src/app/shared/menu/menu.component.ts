@@ -23,15 +23,12 @@ export class MenuComponent implements OnInit, AfterViewInit {
   @Output() logoutEvent = new EventEmitter<void>();
 
   constructor() {
-    console.log("constructor called");
   }
 
   ngOnInit(): void {
-    console.log("ngOnInit called");
   }
 
   ngAfterViewInit(): void {
-    console.log("ngAfterViewInit called");
   }
 
   closeMenu() {
