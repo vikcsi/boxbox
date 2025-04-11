@@ -1,6 +1,8 @@
 import { Component, ViewChild, OnInit } from '@angular/core';
 import { CountdownComponent } from '../../shared/countdown/countdown.component';
 import { MatCard } from '@angular/material/card';
+import { Track } from '../../shared/models/Track';
+import tracksData from '../../../../public/data/tracks.json';
 
 @Component({
   selector: 'app-home',
@@ -9,11 +11,9 @@ import { MatCard } from '@angular/material/card';
   styleUrl: './home.component.scss'
 })
 export class HomeComponent implements OnInit {
-  raceDates: Date[] = [
-    new Date('2025-04-06T17:01:00'), 
-    new Date('2025-06-06T17:00:00'),
-    new Date('2025-07-01T15:45:00')
-  ];
+  raceDates: Date[] = [];
+  tracks: Track[] = [];
+
   
   @ViewChild('countdownRef') countdownRef!: CountdownComponent;
 
@@ -34,6 +34,19 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.setDailyFact();
+    this.tracks = tracksData.map(track => {
+      return {
+        ...track,
+        date: new Date(this.formatDate(track.date))
+      } as unknown as Track;
+    }).sort((a, b) => a.date.getTime() - b.date.getTime());
+    for (let index = 0; index < this.tracks.length; index++) {
+      this.raceDates[index] = this.tracks[index].date;
+    }
+  }
+
+  private formatDate(dateString: string): string {
+    return dateString.replace(/(\d{4})\.(\d{2})\.(\d{2})\./, '$1-$2-$3');
   }
 
   private setDailyFact(): void {

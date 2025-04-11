@@ -1,1 +1,35 @@
-<p>tracks works!</p>
+<div class="tracks-container">
+    <h1>Formula 1 Tracks</h1>
+    
+    <div class="tracks-grid">
+      @for (track of tracks; track track.trackID) {
+        <mat-card class="track-card">
+          <mat-card-header>
+            <mat-card-title>{{ track.trackName }}</mat-card-title>
+            <mat-card-subtitle>{{ track.country }}</mat-card-subtitle>
+          </mat-card-header>
+          
+          <mat-card-content>
+            <div class="track-info">
+              <p><strong>Length:</strong> {{ track.length }} km</p>
+              <p><strong>Laps:</strong> {{ track.lapNumber }}</p>
+              <p><strong>Race distance:</strong> {{ track.raceDist }} km</p>
+              <p><strong>Date:</strong> {{ formatDisplayDate(track.date) }}</p>
+            </div>
+          </mat-card-content>
+          
+          <mat-card-actions>
+            @if (isRaceCompleted(track.date)) {
+              <button mat-button color="primary" [routerLink]="['/results', track.trackID]">View Results</button>
+            } @else {
+              <button mat-button disabled>Upcoming Race</button>
+            }
+          </mat-card-actions>
+        </mat-card>
+      } @empty {
+        <div class="no-data">
+          <p>There are no tracks in the database.</p>
+        </div>
+      }
+    </div>
+  </div>

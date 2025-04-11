@@ -5,5 +5,5 @@ export interface Track {
     length: number;
     lapNumber: number;
     raceDist: number;
-    date: string;
+    date: Date;
 }
