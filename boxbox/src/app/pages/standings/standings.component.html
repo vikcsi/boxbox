@@ -1,0 +1,90 @@
+<div class="standings-container">
+    <h1>Championship Standings</h1>
+    
+    <div class="button-group">
+      <mat-button-toggle-group [value]="selectedState" (change)="onChange($event)">
+        <mat-button-toggle [value]="toggleEnum.Driver">Driver Standings</mat-button-toggle>
+        <mat-button-toggle [value]="toggleEnum.Constructor">Constructor Standings</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+    
+    <div class="content">
+      @if (selectedState === toggleEnum.null) {
+        <div class="no-selection">
+          <p>Select Driver or Constructor standings to view the championship results.</p>
+        </div>
+      } @else if (selectedState === toggleEnum.Driver) {
+        <div class="driver-standings">
+          <mat-card>
+            <mat-card-content>
+              <table mat-table [dataSource]="driverStandings" class="standings-table">
+                <ng-container matColumnDef="position">
+                  <th mat-header-cell *matHeaderCellDef> Pos </th>
+                  <td mat-cell *matCellDef="let driver; let i = index"> {{ i + 1 }} </td>
+                </ng-container>
+                
+                <ng-container matColumnDef="driver">
+                  <th mat-header-cell *matHeaderCellDef> Driver </th>
+                  <td mat-cell *matCellDef="let driver"> 
+                    <div class="driver-info">
+                      <span class="driver-name">{{ driver.name }}</span>
+                      <span class="driver-country">{{ driver.country }}</span>
+                    </div>
+                  </td>
+                </ng-container>
+                
+                <ng-container matColumnDef="team">
+                  <th mat-header-cell *matHeaderCellDef> Team </th>
+                  <td mat-cell *matCellDef="let driver"> {{ driver.team }} </td>
+                </ng-container>
+                
+                <ng-container matColumnDef="points">
+                  <th mat-header-cell *matHeaderCellDef> Points </th>
+                  <td mat-cell *matCellDef="let driver"> <strong>{{ driver.points }}</strong> </td>
+                </ng-container>
+                
+                <ng-container matColumnDef="wins">
+                  <th mat-header-cell *matHeaderCellDef> Wins </th>
+                  <td mat-cell *matCellDef="let driver"> {{ driver.wins }} </td>
+                </ng-container>
+                
+                <tr mat-header-row *matHeaderRowDef="driverDisplayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: driverDisplayedColumns;"></tr>
+              </table>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      } @else if (selectedState === toggleEnum.Constructor) {
+        <div class="team-standings">
+          <mat-card>
+            <mat-card-content>
+              <table mat-table [dataSource]="teamStandings" class="standings-table">
+                <ng-container matColumnDef="position">
+                  <th mat-header-cell *matHeaderCellDef> Pos </th>
+                  <td mat-cell *matCellDef="let team; let i = index"> {{ i + 1 }} </td>
+                </ng-container>
+                
+                <ng-container matColumnDef="team">
+                  <th mat-header-cell *matHeaderCellDef> Team </th>
+                  <td mat-cell *matCellDef="let team"> {{ team.name }} </td>
+                </ng-container>
+                
+                <ng-container matColumnDef="points">
+                  <th mat-header-cell *matHeaderCellDef> Points </th>
+                  <td mat-cell *matCellDef="let team"> <strong>{{ team.points }}</strong> </td>
+                </ng-container>
+                
+                <ng-container matColumnDef="wins">
+                  <th mat-header-cell *matHeaderCellDef> Wins </th>
+                  <td mat-cell *matCellDef="let team"> {{ team.wins }} </td>
+                </ng-container>
+                
+                <tr mat-header-row *matHeaderRowDef="teamDisplayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: teamDisplayedColumns;"></tr>
+              </table>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      }
+    </div>
+  </div>

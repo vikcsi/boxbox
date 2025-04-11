@@ -1,0 +1,53 @@
+.standings-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #ffffff;
+  }
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+
+  ::ng-deep {
+    .mat-button-toggle {
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    .mat-button-toggle-checked {
+        color: #7e0000;
+      }
+  }
+}
+
+.no-selection {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.standings-table {
+  width: 100%;
+  background-color: transparent;
+  .driver-info {
+    display: flex;
+    flex-direction: column;
+    
+    .driver-name {
+      font-weight: 500;
+    }
+    
+    .driver-country {
+      font-size: 0.85em;
+      color: #666;
+    }
+  }
+}

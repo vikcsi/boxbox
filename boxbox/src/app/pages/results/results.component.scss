@@ -1,0 +1,59 @@
+.results-container {
+    padding: 16px;
+    
+    .race-header {
+      text-align: center;
+      margin-bottom: 24px;
+      
+      h1 {
+        margin-bottom: 8px;
+      }
+      
+      h2 {
+        margin-bottom: 16px;
+        font-weight: normal;
+        color: rgba(0, 0, 0, 0.6);
+      }
+    }
+  }
+  
+  .results-table {
+    width: 100%;
+    
+    .mat-mdc-row:nth-child(1) {
+      background-color: rgba(255, 215, 0, 0.1);
+    }
+    
+    .mat-mdc-row:nth-child(2) {
+      background-color: rgba(192, 192, 192, 0.1);
+    }
+    
+    .mat-mdc-row:nth-child(3) {
+      background-color: rgba(205, 127, 50, 0.1);
+    }
+    
+    .driver-country {
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+  
+  .no-results {
+    display: flex;
+    justify-content: center;
+    margin-top: 32px;
+  }
+  
+  @media (max-width: 599px) {
+    .results-table {
+      .mat-mdc-cell {
+        font-size: 14px;
+        padding: 8px;
+      }
+      
+      .mat-mdc-header-cell {
+        font-size: 14px;
+        padding: 8px;
+      }
+    }
+  }
