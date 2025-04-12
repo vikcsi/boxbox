@@ -4,6 +4,7 @@ import { MatListModule } from '@angular/material/list'
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenav } from '@angular/material/sidenav';
 import { CommonModule } from '@angular/common';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-menu',
@@ -22,7 +23,7 @@ export class MenuComponent implements OnInit, AfterViewInit {
   @Input() isLoggedIn: boolean = false;
   @Output() logoutEvent = new EventEmitter<void>();
 
-  constructor() {
+  constructor(private userService: UserService) {
   }
 
   ngOnInit(): void {
@@ -38,8 +39,7 @@ export class MenuComponent implements OnInit, AfterViewInit {
   }
 
   logout() {
-    localStorage.setItem('isLoggedIn', 'false');
+    this.userService.logout();
     window.location.href = '/home';
-    this.closeMenu();
   }
 }

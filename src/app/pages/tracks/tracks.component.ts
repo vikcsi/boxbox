@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Track } from '../../shared/models/Track';
 import tracksData from '../../../../public/data/tracks.json';
 
@@ -14,8 +13,7 @@ import tracksData from '../../../../public/data/tracks.json';
     CommonModule,
     RouterModule,
     MatCardModule,
-    MatButtonModule,
-    MatProgressSpinnerModule
+    MatButtonModule
   ],
   templateUrl: './tracks.component.html',
   styleUrl: './tracks.component.scss'

@@ -1,3 +1,5 @@
+<h1 class="title">Welcome to BoxBox!</h1>
+
 <div class="first-cards">
     <mat-card class="container">
       <h1>Race Countdown Timer</h1>
@@ -21,7 +23,10 @@
         
         <div class="results-list">
           @for (result of latestResults; track result.position) {
-            <div class="result-item">
+            <div class="result-item" [ngStyle]="{
+              'background-color': getPositionColor(result.position),
+              'transform': result.position <= 3 ? 'scale(1.1)' : 'scale(1)'
+            }">
               <div class="position">{{ result.position }}</div>
               <div class="driver-info">
                 <div class="driver-name">{{ result.driverName }}</div>
@@ -36,7 +41,36 @@
       }
     </mat-card>
   </div>
-  
+
+  @if (isLoggedIn && userFavorites) {
+<div class="user-favorites">
+  <mat-card class="favorite-card">
+    <h2>Your Favorites</h2>
+    
+    <div class="favorite-section">
+      <h3>Favorite Driver</h3>
+      <div class="favorite-info">
+        <div class="favorite-name">{{userFavorites.driverName}}</div>
+        <div class="favorite-stats">
+          <span>Position: {{userFavorites.driverPosition}}</span>
+          <span>Points: {{userFavorites.driverPoints}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="favorite-section">
+      <h3>Favorite Team</h3>
+      <div class="favorite-info">
+        <div class="favorite-name">{{userFavorites.teamName}}</div>
+        <div class="favorite-stats">
+          <span>Position: {{userFavorites.teamPosition}}</span>
+          <span>Points: {{userFavorites.teamPoints}}</span>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+</div>
+}
   <div class="second-cards">
     <mat-card class="container">
       <div class="flex-container">
@@ -44,7 +78,9 @@
           <p>{{dailyFact}}</p>
         </div>
         <div class="image-content">
-          <img mat-card-image src="images/homepgimg.jpg">
+          <img mat-card-image 
+     src="images/homepgimg.jpg" 
+     [ngStyle]="{'height.px': imageHeight}">
         </div>
       </div>
     </mat-card>

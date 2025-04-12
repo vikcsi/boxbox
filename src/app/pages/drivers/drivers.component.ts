@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Driver } from '../../shared/models/Driver';
 import { Team } from '../../shared/models/Team';
+import { TeamService } from '../../services/team.service';
 import driversData from '../../../../public/data/drivers.json';
 import teamsData from '../../../../public/data/teams.json';
 
@@ -17,8 +17,7 @@ import teamsData from '../../../../public/data/teams.json';
     CommonModule,
     RouterModule,
     MatCardModule,
-    MatButtonModule,
-    MatProgressSpinnerModule
+    MatButtonModule
   ],
   templateUrl: './drivers.component.html',
   styleUrl: './drivers.component.scss'
@@ -27,7 +26,7 @@ export class DriversComponent implements OnInit {
   drivers: Driver[] = driversData;
   teams: Team[] = teamsData;
   
-  constructor() {}
+  constructor(private teamService : TeamService) {}
 
   ngOnInit(): void {}
 
@@ -36,7 +35,6 @@ export class DriversComponent implements OnInit {
   }
 
   getTeamName(teamId: string): string {
-    const team = this.teams.find(t => t.teamID === teamId);
-    return team ? team.name : 'unknown';
+    return this.teamService.getTeamById(teamId)?.name || 'unknown';
   }
 }

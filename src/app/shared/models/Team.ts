@@ -5,3 +5,10 @@ export interface Team {
     principal: string;
     driverIDs: string[];
 }
+
+export interface TeamStanding {
+    teamID: string;
+    name: string;
+    points: number;
+    wins: number;
+  }

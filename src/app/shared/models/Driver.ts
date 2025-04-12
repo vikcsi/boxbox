@@ -8,3 +8,13 @@ export interface Driver {
     country: string;
     teamID: string;
   }
+
+  export interface DriverStanding {
+    driverID: string;
+    name: string;
+    country: string;
+    team: string;
+    points: number;
+    wins: number;
+    podiums: number;
+  }

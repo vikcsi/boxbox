@@ -3,11 +3,17 @@ import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { User } from '../../shared/models/User';
+import { Driver } from '../../shared/models/Driver';
+import { Team } from '../../shared/models/Team';
+import driversData from '../../../../public/data/drivers.json';
+import teamsData from '../../../../public/data/teams.json';
+
 
 @Component({
   selector: 'app-signup',
@@ -16,10 +22,11 @@ import { User } from '../../shared/models/User';
     CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
+    MatSelect,
+    MatOption,
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule,
     RouterLink
   ],
   templateUrl: './signup.component.html',
@@ -33,10 +40,14 @@ export class SignupComponent {
     name: new FormGroup({
       firstname: new FormControl('', [Validators.required, Validators.minLength(2)]),
       lastname: new FormControl('', [Validators.required, Validators.minLength(2)])
-    })
-  });
+    }),
+    favDriver : new FormControl('', [Validators.required]), 
+    favTeam : new FormControl('', [Validators.required])
+});
+
+  drivers: Driver[] = driversData;
+  teams: Team[] = teamsData;
   
-  isLoading = false;
   showForm = true;
   signupError = '';
 
@@ -55,7 +66,6 @@ export class SignupComponent {
       return;
     }
 
-    this.isLoading = true;
     this.showForm = false;
 
     const newUser: User = {
@@ -65,15 +75,17 @@ export class SignupComponent {
       },
       email: this.signUpForm.value.email || '',
       password: this.signUpForm.value.password || '',
-      favDriverID: 0,
-      favTeamID: 0
+      favDriverID: this.signUpForm.value.favDriver || '',
+      favTeamID: this.signUpForm.value.favTeam || ''
     };
 
     console.log('New user:', newUser);
     console.log('Form value:', this.signUpForm.value);
 
-    setTimeout(() => {
-      this.router.navigateByUrl('/home');
-    }, 2000);
+    this.router.navigateByUrl('/home');
+  }
+
+  getFullName(driver: Driver): string {
+    return `${driver.name.firstname} ${driver.name.lastname}`;
   }
 }

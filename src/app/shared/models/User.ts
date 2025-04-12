@@ -5,6 +5,6 @@ export interface User {
     };
     email: string;
     password: string;
-    favDriverID : number;
-    favTeamID: number;
+    favDriverID : string;
+    favTeamID: string;
   }

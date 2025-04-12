@@ -5,7 +5,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -19,7 +18,6 @@ import { CommonModule } from '@angular/common';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule,
     RouterLink
   ],
   templateUrl: './login.component.html',
@@ -28,9 +26,7 @@ import { CommonModule } from '@angular/common';
 export class LoginComponent {
   email = new FormControl('');
   password = new FormControl('');
-  isLoading: boolean = false;
   loginError: string = '';
-  showLoginForm: boolean = true;
 
   constructor() {}
 
@@ -38,14 +34,10 @@ export class LoginComponent {
     this.loginError = '';
     
     if (this.email.value === 'test@gmail.com' && this.password.value === 'testpw') {
-      this.isLoading = true;
-      this.showLoginForm = false;
       
       localStorage.setItem('isLoggedIn', 'true');
       
-      setTimeout(() => {
-        window.location.href = '/home';
-      }, 2000);
+      window.location.href = '/home';
     } else {
       this.loginError = 'Invalid email or password!';
     }

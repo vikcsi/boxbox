@@ -6,6 +6,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
+import { UserService } from './services/user.service';
 
 
 @Component({
@@ -27,18 +28,17 @@ export class AppComponent {
 
   isLoggedIn = false;
 
-  constructor() {}
+  constructor(private userService: UserService) {}
 
   ngOnInit(): void {
     this.checkLoginStatus();
   }
 
   checkLoginStatus(): void {
-    this.isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    this.isLoggedIn = this.userService.isLoggedIn();
   }
-
   logout(): void {
-    localStorage.setItem('isLoggedIn', 'false');
+    this.userService.logout();
     this.isLoggedIn = false;
     window.location.href = '/home';
   }

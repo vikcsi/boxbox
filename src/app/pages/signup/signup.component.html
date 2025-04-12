@@ -1,13 +1,5 @@
 <div class="signup-container">
     <h1>Create Account</h1>
-    
-    @if (isLoading) {
-      <div class="loading-container">
-        <h2>Registration in progress</h2>
-        <mat-spinner diameter="50"></mat-spinner>
-        <p>Please wait...</p>
-      </div>
-    }
   
     @if (showForm) {
       <form [formGroup]="signUpForm" (ngSubmit)="signup()" class="signup-form">
@@ -42,6 +34,27 @@
           <input matInput type="password" formControlName="rePassword">
           <mat-icon matSuffix>lock</mat-icon>
         </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Favorite Driver</mat-label>
+          <mat-select formControlName="favDriver">
+            @for (driver of drivers; track driver.driverID) {
+              <mat-option [value]="driver.driverID">{{getFullName(driver)}}</mat-option>
+            }
+          </mat-select>
+          <mat-icon matSuffix>sports_motorsports</mat-icon>
+        </mat-form-field>
+  
+        <mat-form-field appearance="outline">
+          <mat-label>Favorite Team</mat-label>
+          <mat-select formControlName="favTeam">
+            @for (team of teams; track team.teamID) {
+              <mat-option [value]="team.teamID">{{team.name}}</mat-option>
+            }
+          </mat-select>
+          <mat-icon matSuffix>flag</mat-icon>
+        </mat-form-field>
+        
   
         <div class="buttons-row">
           <button mat-flat-button color="primary" type="submit">Register</button>

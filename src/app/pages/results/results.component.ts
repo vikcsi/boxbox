@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { RaceResults, Result } from '../../shared/models/RaceResult';
 import { Driver } from '../../shared/models/Driver';
 import { Track } from '../../shared/models/Track';
+import { TeamService } from '../../services/team.service';
 import resultsData from '../../../../public/data/raceResults.json';
 import driversData from '../../../../public/data/drivers.json';
 import tracksData from '../../../../public/data/tracks.json';
@@ -26,14 +27,15 @@ import tracksData from '../../../../public/data/tracks.json';
   templateUrl: './results.component.html',
   styleUrl: './results.component.scss'
 })
-export class RaceResultsComponent implements OnInit {
+export class ResultsComponent implements OnInit {
   trackID: string | null = null;
   raceResults: Result[] = [];
   track: Track | null = null;
   drivers: Driver[] = driversData;
   displayedColumns: string[] = ['position', 'driver', 'time', 'points', 'fastestLap'];
   
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute,
+    private teamService: TeamService) {}
 
   ngOnInit(): void {
     this.trackID = this.route.snapshot.paramMap.get('id');
@@ -64,10 +66,9 @@ export class RaceResultsComponent implements OnInit {
     }
 }
 
-  getDriverName(driverId: string): string {
-    const driver = this.drivers.find(d => d.driverID === driverId);
-    return driver ? `${driver.name.firstname} ${driver.name.lastname}` : 'Unknown Driver';
-  }
+getDriverName(driverId: string): string {
+  return this.teamService.getFullName(driverId);
+}
 
   getDriverCountry(driverId: string): string {
     const driver = this.drivers.find(d => d.driverID === driverId);

@@ -8,11 +8,24 @@ import { RaceResults, Result } from '../../shared/models/RaceResult';
 import tracksData from '../../../../public/data/tracks.json';
 import resultsData from '../../../../public/data/raceResults.json';
 import driversData from '../../../../public/data/drivers.json';
+import { StandingsService } from '../../services/standings.service';
+import { UserService } from '../../services/user.service';
+import { TeamService } from '../../services/team.service';
+
 
 interface LatestRaceResult {
   position: number;
   driverName: string;
   driverCountry: string;
+}
+
+interface UserFavorites {
+  driverName: string;
+  driverPosition: number;
+  driverPoints: number;
+  teamName: string;
+  teamPosition: number;
+  teamPoints: number;
 }
 
 @Component({
@@ -28,7 +41,15 @@ export class HomeComponent implements OnInit {
   drivers: Driver[] = driversData;
   latestResults: LatestRaceResult[] = [];
   latestRaceTrack: Track | null = null;
+  isLoggedIn: boolean = false;
+userFavorites: UserFavorites | null = null
   
+constructor(
+  private standingsService: StandingsService,
+  private userService: UserService,
+  private teamService: TeamService
+) {}
+
   @ViewChild('countdownRef') countdownRef!: CountdownComponent;
 
   dailyFact: string = '';
@@ -47,9 +68,14 @@ export class HomeComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.isLoggedIn = this.userService.isLoggedIn();
     this.setDailyFact();
     this.loadTracks();
     this.findLatestRaceResults();
+    
+    if (this.isLoggedIn) {
+      this.loadUserFavorites();
+    }
   }
 
   private loadTracks(): void {
@@ -117,4 +143,52 @@ export class HomeComponent implements OnInit {
     const positiveHash = Math.abs(hash);
     return positiveHash % max;
   }
+
+
+  private loadUserFavorites(): void {
+    const user = this.userService.getCurrentUser();
+    if (!user) return;
+
+    const driverStandings = this.standingsService.getDriverStandings();
+    const teamStandings = this.standingsService.getTeamStandings();
+
+    const favDriver = driverStandings.find(d => d.driverID === user.favDriverID);
+    const favTeam = teamStandings.find(t => t.teamID === user.favTeamID);
+
+    if (favDriver && favTeam) {
+      this.userFavorites = {
+        driverName: favDriver.name,
+        driverPosition: driverStandings.indexOf(favDriver) + 1,
+        driverPoints: favDriver.points,
+        teamName: favTeam.name,
+        teamPosition: teamStandings.indexOf(favTeam) + 1,
+        teamPoints: favTeam.points
+      };
+    }
+  }
+
+getPositionColor(position: number): string {
+  const colors = {
+    1: '#FFD700',  
+    2: '#C0C0C0',  
+    3: '#CD7F32',  
+    4: '#8d0000',  
+    5: '#8d0000'
+  };
+  return colors[position as keyof typeof colors];
+}
+
+imageHeight = 300; 
+
+ngAfterViewInit() {
+  this.calculateImageHeight();
+  window.addEventListener('resize', () => this.calculateImageHeight());
+}
+
+calculateImageHeight() {
+  const imgElement = document.querySelector('.image-content img');
+  if (imgElement) {
+    this.imageHeight = imgElement.clientWidth * 0.75;
+  }
+}
 }

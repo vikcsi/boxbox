@@ -35,7 +35,7 @@ export const routes: Routes = [
     },
     {
         path: 'results/:id',
-        loadComponent: () => import('./pages/results/results.component').then(m => m.RaceResultsComponent)
+        loadComponent: () => import('./pages/results/results.component').then(m => m.ResultsComponent)
     },
     {
         path: '',
