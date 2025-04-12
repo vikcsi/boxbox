@@ -1,1 +1,51 @@
-<p>profile works!</p>
+<div class="profile-container">
+    <mat-card class="profile-card">
+      <mat-card-header>
+        <div mat-card-avatar class="profile-avatar">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+        <mat-card-title>{{ user?.name?.firstname }} {{ user?.name?.lastname }}</mat-card-title>
+        <mat-card-subtitle>F1 Fan</mat-card-subtitle>
+      </mat-card-header>
+  
+      <mat-card-content>
+        <div class="profile-details">
+          <div class="detail-row">
+            <mat-icon>email</mat-icon>
+            <span>{{ user?.email || 'N/A' }}</span>
+          </div>
+  
+          <div class="favorites-section">
+            <h3>Your Favorites</h3>
+            
+            @if (favoriteDriver) {
+            <div class="favorite-item">
+              <mat-icon>sports_motorsports</mat-icon>
+              <div>
+                <strong>Driver:</strong> 
+                {{ favoriteDriver.name.firstname }} {{ favoriteDriver.name.lastname }}
+                <small>(#{{ favoriteDriver.raceNumber }})</small>
+              </div>
+            </div>
+        }
+            @if (favoriteTeam) {
+            <div class="favorite-item">
+              <mat-icon>groups</mat-icon>
+              <div>
+                <strong>Team:</strong> 
+                {{ favoriteTeam.name }}
+                <small>({{ favoriteTeam.base }})</small>
+              </div>
+            </div>
+        }
+          </div>
+        </div>
+      </mat-card-content>
+  
+      <mat-card-actions>
+        <button mat-button color="primary">
+          <mat-icon>edit</mat-icon> Edit Profile
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>

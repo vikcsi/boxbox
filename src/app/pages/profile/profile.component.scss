@@ -1,0 +1,76 @@
+.profile-container {
+    margin-top: 50px;
+    padding: 24px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .profile-card {
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .profile-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #8d0000;
+    color: white;
+  
+    mat-icon {
+      transform: scale(1.8);
+    }
+  }
+  
+  .profile-details {
+    padding: 16px;
+  
+    .detail-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 16px;
+  
+      mat-icon {
+        color: #8d0000;
+      }
+    }
+  }
+  
+  .favorites-section {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+  
+    h3 {
+      color: #8d0000;
+      margin-bottom: 16px;
+    }
+  
+    .favorite-item {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 8px;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      transition: all 0.3s;
+  
+      &:hover {
+        background-color: #f0f0f0;
+        transform: translateX(4px);
+      }
+  
+      mat-icon {
+        color: #7e0000;
+      }
+    }
+  }

@@ -1,59 +1,65 @@
 .results-container {
-    padding: 16px;
-    
-    .race-header {
+  padding: 16px;
+
+  .race-header {
+    text-align: center;
+    margin-bottom: 24px;
+
+    h1 {
+      margin-bottom: 14px;
       text-align: center;
-      margin-bottom: 24px;
-      
-      h1 {
-        margin-bottom: 8px;
-      }
-      
-      h2 {
-        margin-bottom: 16px;
-        font-weight: normal;
-        color: rgba(0, 0, 0, 0.6);
-      }
+      font-family: 'Raceline', sans-serif;
+      font-size: 2.5rem;
+      color: white;
+      text-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    h2 {
+      margin-bottom: 16px;
+      font-weight: normal;
+      color: white;
     }
   }
-  
+}
+
+.results-table {
+  width: 100%;
+  background-color: transparent;
+
+  .gold {
+    background-color: rgba(255, 215, 0, 0.1) !important;
+  }
+
+  .silver {
+    background-color: rgba(192, 192, 192, 0.1) !important;
+  }
+
+  .bronze {
+    background-color: rgba(205, 127, 50, 0.1) !important;
+  }
+
+  .driver-country {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.no-results {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+@media (max-width: 599px) {
   .results-table {
-    width: 100%;
-    
-    .gold {
-      background-color: rgba(255, 215, 0, 0.1) !important;  
+    .mat-mdc-cell {
+      font-size: 14px;
+      padding: 8px;
     }
-    
-    .silver {
-      background-color: rgba(192, 192, 192, 0.1) !important;  
-    }
-    
-    .bronze {
-      background-color: rgba(205, 127, 50, 0.1) !important;  
-    }
-    
-    .driver-country {
-      font-size: 12px;
-      color: rgba(0, 0, 0, 0.6);
+
+    .mat-mdc-header-cell {
+      font-size: 14px;
+      padding: 8px;
     }
   }
-  
-  .no-results {
-    display: flex;
-    justify-content: center;
-    margin-top: 32px;
-  }
-  
-  @media (max-width: 599px) {
-    .results-table {
-      .mat-mdc-cell {
-        font-size: 14px;
-        padding: 8px;
-      }
-      
-      .mat-mdc-header-cell {
-        font-size: 14px;
-        padding: 8px;
-      }
-    }
-  }
+}

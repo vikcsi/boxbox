@@ -26,9 +26,9 @@ export class DriversComponent implements OnInit {
   drivers: Driver[] = driversData;
   teams: Team[] = teamsData;
   
-  constructor(private teamService : TeamService) {}
+  constructor(private teamService: TeamService) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   getFullName(driver: Driver): string {
     return `${driver.name.firstname} ${driver.name.lastname}`;

@@ -31,4 +31,5 @@ export class TeamsComponent implements OnInit {
   getDriver(driverID: string): string {
     return this.teamService.getFullName(driverID);
   }
+  
 }
