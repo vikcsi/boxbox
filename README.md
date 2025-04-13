@@ -1,6 +1,10 @@
-# Boxbox
+# BoxBox!
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.4.
+
+## Project name
+
+Forma 1 bajnokság nyilvántartó rendszer
 
 ## Development server
 
