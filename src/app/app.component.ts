@@ -25,6 +25,7 @@ import { UserService } from './services/user.service';
 })
 export class AppComponent {
   title = 'boxbox';
+  reloaded = sessionStorage.getItem('reloaded');
 
   isLoggedIn = false;
 

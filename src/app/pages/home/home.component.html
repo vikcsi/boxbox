@@ -1,52 +1,47 @@
 <h1 class="title">Welcome to BoxBox!</h1>
 
-<div class="first-cards">
-    <mat-card class="container">
-      <h1>Race Countdown Timer</h1>
-      
-      <app-countdown 
-        [targetDates]="raceDates" 
-        [restartDelay]="10000"
-        raceTimeMessage="It's race time!"
-        #countdownRef>
-      </app-countdown>
-      
-      <div class="text-countdown">
-        <p>Time until the next race: {{ countdownRef.getFormattedCountdown() }}</p>
-      </div>
-    </mat-card>
-    
-    <mat-card class="container latest-results">
-      @if (latestRaceTrack && latestResults.length > 0) {
-        <h1>Latest Race Results</h1>
-        <h2>{{ latestRaceTrack.trackName }} - {{ latestRaceTrack.country }}</h2>
-        
-        <div class="results-list">
-          @for (result of latestResults; track result.position) {
-            <div class="result-item" [ngStyle]="{
+<div class>
+  <mat-card class="container">
+    <h1>Race Countdown Timer</h1>
+
+    <app-countdown [targetDates]="raceDates" [restartDelay]="10000" raceTimeMessage="It's race time!" #countdownRef>
+    </app-countdown>
+
+    <div class="text-countdown">
+      <p>Time until the next race: {{ countdownRef.getFormattedCountdown() }}</p>
+    </div>
+  </mat-card>
+
+  <mat-card class="container latest-results">
+    @if (latestRaceTrack && latestResults.length > 0) {
+    <h1>Latest Race Results</h1>
+    <h2>{{ latestRaceTrack.trackName }} - {{ latestRaceTrack.country }}</h2>
+
+    <div class="results-list">
+      @for (result of latestResults; track result.position) {
+      <div class="result-item" [ngStyle]="{
               'background-color': getPositionColor(result.position),
               'transform': result.position <= 3 ? 'scale(1.1)' : 'scale(1)'
             }">
-              <div class="position">{{ result.position }}</div>
-              <div class="driver-info">
-                <div class="driver-name">{{ result.driverName }}</div>
-                <div class="driver-country">{{ result.driverCountry }}</div>
-              </div>
-            </div>
-          }
+        <div class="position">{{ result.position }}</div>
+        <div class="driver-info">
+          <div class="driver-name">{{ result.driverName }}</div>
+          <div class="driver-country">{{ result.driverCountry }}</div>
         </div>
-      } @else {
-        <h1>No Race Results Yet</h1>
-        <p>Check back after the first race of the season!</p>
+      </div>
       }
-    </mat-card>
-  </div>
+    </div>
+    } @else {
+    <h1>No Race Results Yet</h1>
+    <p>Check back after the first race of the season!</p>
+    }
+  </mat-card>
 
   @if (isLoggedIn && userFavorites) {
-<div class="user-favorites">
+
   <mat-card class="favorite-card">
-    <h2>Your Favorites</h2>
-    
+    <h1>Your Favorites</h1>
+
     <div class="favorite-section">
       <h3>Favorite Driver</h3>
       <div class="favorite-info">
@@ -69,5 +64,5 @@
       </div>
     </div>
   </mat-card>
+  }
 </div>
-}

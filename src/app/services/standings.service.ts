@@ -32,6 +32,7 @@ export class StandingsService {
         const driverStanding = standings.find(ds => ds.driverID === result.driverID);
         if (driverStanding) {
           driverStanding.points += result.points;
+          if(result.fastestLap) driverStanding.points += 1;
           if (result.position === 1) driverStanding.wins += 1;
           if (result.position <= 3) driverStanding.podiums += 1;
         }
@@ -50,16 +51,13 @@ export class StandingsService {
     }));
 
     this.results.forEach(race => {
-      const raceWinnerTeamID = this.getTeamIDByDriverID(
-        race.results.find(r => r.position === 1)?.driverID || ''
-      );
-      
       race.results.forEach(result => {
         const driverTeamID = this.getTeamIDByDriverID(result.driverID);
         if (driverTeamID) {
           const teamStanding = standings.find(ts => ts.teamID === driverTeamID);
           if (teamStanding) {
             teamStanding.points += result.points;
+            if(result.fastestLap) teamStanding.points += 1;
             if (result.position === 1) teamStanding.wins += 1;
           }
         }

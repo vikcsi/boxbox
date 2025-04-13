@@ -22,9 +22,9 @@ export class UserService {
         lastname: 'User'
       },
       email: 'test@example.com',
-      password: '',
-      favDriverID: 'mv1', 
-      favTeamID: 'rb'     
+      password: 'testpw',
+      favDriverID: 'cl16', 
+      favTeamID: 'ferr'     
     };
   }
 

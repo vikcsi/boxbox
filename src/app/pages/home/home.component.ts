@@ -4,13 +4,12 @@ import { CountdownComponent } from '../../shared/countdown/countdown.component';
 import { MatCardModule } from '@angular/material/card';
 import { Track } from '../../shared/models/Track';
 import { Driver } from '../../shared/models/Driver';
-import { RaceResults, Result } from '../../shared/models/RaceResult';
+import { RaceResults } from '../../shared/models/RaceResult';
 import tracksData from '../../../../public/data/tracks.json';
 import resultsData from '../../../../public/data/raceResults.json';
 import driversData from '../../../../public/data/drivers.json';
 import { StandingsService } from '../../services/standings.service';
 import { UserService } from '../../services/user.service';
-import { TeamService } from '../../services/team.service';
 
 
 interface LatestRaceResult {
@@ -42,12 +41,12 @@ export class HomeComponent implements OnInit {
   latestResults: LatestRaceResult[] = [];
   latestRaceTrack: Track | null = null;
   isLoggedIn: boolean = false;
-userFavorites: UserFavorites | null = null
-  
-constructor(
-  private standingsService: StandingsService,
-  private userService: UserService,
-) {}
+  userFavorites: UserFavorites | null = null
+
+  constructor(
+    private standingsService: StandingsService,
+    private userService: UserService,
+  ) { }
 
   @ViewChild('countdownRef') countdownRef!: CountdownComponent;
 
@@ -69,7 +68,7 @@ constructor(
         date: new Date(this.formatDate(track.date))
       } as unknown as Track;
     }).sort((a, b) => a.date.getTime() - b.date.getTime());
-    
+
     for (let index = 0; index < this.tracks.length; index++) {
       this.raceDates[index] = this.tracks[index].date;
     }
@@ -78,20 +77,20 @@ constructor(
   private findLatestRaceResults(): void {
     const today = new Date();
     const completedRaces = this.tracks.filter(track => track.date < today);
-    
+
     if (completedRaces.length > 0) {
       const latestRace = completedRaces[completedRaces.length - 1];
       this.latestRaceTrack = latestRace;
-      
-      const raceResults = (resultsData as RaceResults[]).find(result => 
+
+      const raceResults = (resultsData as RaceResults[]).find(result =>
         result.trackID === latestRace.trackID
       );
-      
+
       if (raceResults) {
         const top5Results = raceResults.results
           .filter(result => result.position <= 5)
           .sort((a, b) => a.position - b.position);
-          
+
         this.latestResults = top5Results.map(result => {
           const driver = this.drivers.find(d => d.driverID === result.driverID);
           return {
@@ -131,14 +130,14 @@ constructor(
     }
   }
 
-getPositionColor(position: number): string {
-  const colors = {
-    1: '#FFD700',  
-    2: '#C0C0C0',  
-    3: '#CD7F32',  
-    4: '#8d0000',  
-    5: '#8d0000'
-  };
-  return colors[position as keyof typeof colors];
-}
+  getPositionColor(position: number): string {
+    const colors = {
+      1: '#FFD700',
+      2: '#C0C0C0',
+      3: '#CD7F32',
+      4: '#8d0000',
+      5: '#8d0000'
+    };
+    return colors[position as keyof typeof colors];
+  }
 }

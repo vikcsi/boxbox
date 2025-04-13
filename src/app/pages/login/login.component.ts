@@ -33,7 +33,7 @@ export class LoginComponent {
   login() {
     this.loginError = '';
     
-    if (this.email.value === 'test@gmail.com' && this.password.value === 'testpw') {
+    if (this.email.value === 'test@example.com' && this.password.value === 'testpw') {
       
       localStorage.setItem('isLoggedIn', 'true');
       

@@ -13,11 +13,6 @@
 
 }
 
-.first-cards {
-  display: flex;
-  width: 100%;
-  align-items: stretch;
-  justify-content: center;
 
   .container {
     margin: 30px;
@@ -25,7 +20,6 @@
     text-align: center;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     border-radius: 12px;
-    width: 600px;
     min-height: 320px;
     display: flex;
     flex-direction: column;
@@ -64,11 +58,10 @@
       align-items: center;
       padding: 10px;
       border-radius: 8px;
-      transition: transform 0.2s;
-      
-      &:hover {
-        transform: translateX(5px);
-      }
+      transition: 
+        transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+        background-color 0.3s ease;
+      will-change: transform;
       
       .position {
         font-size: 24px;
@@ -81,36 +74,50 @@
         background-color: #7e0000;
         color: white;
         margin-right: 15px;
+        transition: all 0.3s ease;
       }
       
       .driver-info {
         text-align: left;
-        
         .driver-name {
           font-weight: 500;
           font-size: 16px;
           color: #ffffff;
-
+          transition: all 0.3s ease;
         }
-        
         .driver-country {
           font-size: 14px;
           color: #ffffff;
+          transition: all 0.3s ease;
+        }
+      }
+      
+      &:hover {
+        transform: translateX(5px) scale(var(--item-scale, 1)) !important;
+        
+        .position {
+          transform: scale(1.1);
+        }
+        
+        .driver-name {
+          font-weight: 600;
         }
       }
     }
   }
-}
 
-.user-favorites {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 16px 32px;
+
+
 
   .favorite-card {
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     border-radius: 12px;
+    margin: 30px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
 
     h2 {
       color: #8d0000;
@@ -156,7 +163,7 @@
       }
     }
   }
-}
+
 
 @media only screen and (max-width: 690px) {
   .title {
