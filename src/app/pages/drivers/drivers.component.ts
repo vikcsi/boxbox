@@ -5,9 +5,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { Driver } from '../../shared/models/Driver';
 import { Team } from '../../shared/models/Team';
-import { TeamService } from '../../services/team.service';
-import driversData from '../../../../public/data/drivers.json';
-import teamsData from '../../../../public/data/teams.json';
+import { FirestoreDataService } from '../../shared/services/firestore-data.service';
+
 
 
 @Component({
@@ -23,18 +22,21 @@ import teamsData from '../../../../public/data/teams.json';
   styleUrl: './drivers.component.scss'
 })
 export class DriversComponent implements OnInit {
-  drivers: Driver[] = driversData;
-  teams: Team[] = teamsData;
-  
-  constructor(private teamService: TeamService) { }
+  drivers: Driver[] = [];
+  teams: Team[] = [];
 
-  ngOnInit(): void { }
+  constructor(private firestoreService: FirestoreDataService) {}
+
+  ngOnInit(): void {
+    this.firestoreService.getDrivers().subscribe(drivers => this.drivers = drivers);
+    this.firestoreService.getTeams().subscribe(teams => this.teams = teams);
+  }
 
   getFullName(driver: Driver): string {
     return `${driver.name.firstname} ${driver.name.lastname}`;
   }
 
   getTeamName(teamId: string): string {
-    return this.teamService.getTeamById(teamId)?.name || 'unknown';
+    return this.teams.find(t => t.teamID === teamId)?.name || 'unknown';
   }
 }

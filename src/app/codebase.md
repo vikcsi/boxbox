@@ -1,0 +1,412 @@
+# app.component.html
+
+```html
+<mat-sidenav-container> <mat-sidenav #sidenav position="end"> <app-menu [sidenav]="sidenav" [isLoggedIn]="isLoggedIn" (logoutEvent)="logout()"></app-menu> </mat-sidenav> <mat-sidenav-content> <mat-toolbar> <div class="toolbar-container"> <div class="logo-section"> <a routerLink="/home" id="title">BoxBox!</a> </div> @if (isLoggedIn) { <nav class="navigation-section"> <ul> <li><a routerLink="/standings">Standings</a></li> <li><a routerLink="/drivers">Drivers</a></li> <li><a routerLink="/teams">Teams</a></li> <li><a routerLink="/tracks">Tracks</a></li> <li><a routerLink="/profile">Profile</a></li> </ul> </nav> } <div class="login-section"> @if (!isLoggedIn) { <a routerLink="/login">Login</a> } @if (isLoggedIn) { <a href="#" (click)="$event.preventDefault(); logout()">Logout</a> <button mat-button (click)="onToggleSidenav(sidenav)" class="menu-toggle-button"> <mat-icon>menu</mat-icon> </button> } </div> </div> </mat-toolbar> <router-outlet /> </mat-sidenav-content> </mat-sidenav-container>
+```
+
+# app.component.scss
+
+```scss
+@font-face { font-family: Raceline; src: url("shared/raceline.otf"); } * { background-color: #8d0000; } mat-sidenav-container { height: 100%; } mat-toolbar { background-color: transparent; color: white; padding: 0; .toolbar-container { display: flex; width: 100%; align-items: center; justify-content: space-between; .logo-section { flex: 1; text-align: left; #title { font-size: 30px; font-family: 'Raceline'; color: white; text-decoration: none; transition: all 500ms; margin-left: 15px; } } .navigation-section { flex: 3; ul { display: flex; justify-content: center; list-style: none; align-items: center; margin-block-start: 0; margin-block-end: 0; gap: 30px; li { a { text-decoration: none; color: white; font-size: 22px; font-family: 'Raceline'; transition: all 500ms; &:hover { font-size: 28px; font-size-adjust: 20px; } } } } } .login-section { flex: 1; display: flex; justify-content: flex-end; align-items: center; a { text-decoration: none; color: white; font-size: 30px; font-family: 'Raceline'; transition: all 500ms; margin-right: 15px; } .menu-toggle-button { display: none; min-width: 50px; padding: 0 8px; } mat-icon { color: white; } } } } mat-sidenav { border-radius: 0; } @media (max-width: 865px) { mat-toolbar { .toolbar-container { .navigation-section { display: none; } .login-section { .menu-toggle-button { display: block; } } } } }
+```
+
+# app.component.spec.ts
+
+```ts
+import { TestBed } from '@angular/core/testing'; import { AppComponent } from './app.component'; describe('AppComponent', () => { beforeEach(async () => { await TestBed.configureTestingModule({ imports: [AppComponent], }).compileComponents(); }); it('should create the app', () => { const fixture = TestBed.createComponent(AppComponent); const app = fixture.componentInstance; expect(app).toBeTruthy(); }); it(`should have the 'boxbox' title`, () => { const fixture = TestBed.createComponent(AppComponent); const app = fixture.componentInstance; expect(app.title).toEqual('boxbox'); }); it('should render title', () => { const fixture = TestBed.createComponent(AppComponent); fixture.detectChanges(); const compiled = fixture.nativeElement as HTMLElement; expect(compiled.querySelector('h1')?.textContent).toContain('Hello, boxbox'); }); });
+```
+
+# app.component.ts
+
+```ts
+import { Component, OnInit, OnDestroy } from '@angular/core'; import { CommonModule } from '@angular/common'; import { RouterOutlet, RouterLink } from '@angular/router'; import { MenuComponent } from './shared/menu/menu.component'; import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav'; import { MatToolbarModule } from '@angular/material/toolbar'; import { MatButtonModule } from '@angular/material/button'; import { MatIconModule } from '@angular/material/icon'; import { AuthService } from './shared/services/auth.service'; import { Subscription } from 'rxjs'; @Component({ selector: 'app-root', imports: [ CommonModule, RouterOutlet, MatSidenavModule, MatToolbarModule, MatButtonModule, MatIconModule, RouterLink, MenuComponent ], templateUrl: './app.component.html', styleUrl: './app.component.scss' }) export class AppComponent implements OnInit, OnDestroy{ title = 'boxbox'; reloaded = sessionStorage.getItem('reloaded'); private authSubscription?: Subscription; isLoggedIn = false; constructor(private authService: AuthService) {} ngOnInit(): void { this.authSubscription = this.authService.currentUser.subscribe(user => { this.isLoggedIn = !!user; localStorage.setItem('isLoggedIn', this.isLoggedIn ? 'true' : 'false'); }); } ngOnDestroy(): void { this.authSubscription?.unsubscribe(); } logout(): void { this.authService.signOut(); } onToggleSidenav(sidenav: MatSidenav){ sidenav.toggle(); } }
+```
+
+# app.config.ts
+
+```ts
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core'; import { provideRouter } from '@angular/router'; import { routes } from './app.routes'; import { initializeApp, provideFirebaseApp } from '@angular/fire/app'; import { getAuth, provideAuth } from '@angular/fire/auth'; import { getFirestore, provideFirestore } from '@angular/fire/firestore'; export const appConfig: ApplicationConfig = { providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideFirebaseApp(() => initializeApp({ projectId: "boxbox-80475", appId: "1:624517284379:web:7be43fe24ecfdbf6bfaebe", storageBucket: "boxbox-80475.firebasestorage.app", apiKey: "AIzaSyClgaLnJGgwvfxaOpqbcIZhMryEBhGkRkM", authDomain: "boxbox-80475.firebaseapp.com", messagingSenderId: "624517284379" })), provideAuth(() => getAuth()), provideFirestore(() => getFirestore())] };
+```
+
+# app.routes.ts
+
+```ts
+import { Routes } from '@angular/router'; import { authGuard, publicGuard } from './shared/guards/auth/auth.guard'; export const routes: Routes = [ { path: 'home', loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent) }, { path: 'standings', loadComponent: () => import('./pages/standings/standings.component').then(m => m.StandingsComponent), canActivate: [authGuard] }, { path: 'drivers', loadComponent: () => import('./pages/drivers/drivers.component').then(m => m.DriversComponent), canActivate: [authGuard] }, { path: 'teams', loadComponent: () => import('./pages/teams/teams.component').then(m => m.TeamsComponent), canActivate: [authGuard] }, { path: 'tracks', loadComponent: () => import('./pages/tracks/tracks.component').then(m => m.TracksComponent), canActivate: [authGuard] }, { path: 'profile', loadComponent: () => import('./pages/profile/profile.component').then(m => m.ProfileComponent), canActivate: [authGuard] }, { path: 'login', loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent), canActivate: [publicGuard] }, { path: 'signup', loadComponent: () => import('./pages/signup/signup.component').then(m => m.SignupComponent), canActivate: [publicGuard] }, { path: 'results/:id', loadComponent: () => import('./pages/results/results.component').then(m => m.ResultsComponent), canActivate: [authGuard] }, { path: '', redirectTo: 'home', pathMatch: 'full' } ];
+```
+
+# pages\drivers\drivers.component.html
+
+```html
+<div class="drivers-container"> <h1>Drivers</h1> <div class="drivers-grid"> @for (driver of drivers; track driver.driverID) { <mat-card class="driver-card"> <mat-card-header> <mat-card-title>{{ getFullName(driver) }}</mat-card-title> <mat-card-subtitle></mat-card-subtitle> </mat-card-header> <mat-card-content> <div class="driver-info"> <p><strong>Race number:</strong> {{ driver.raceNumber }}</p> <p><strong>Country:</strong> {{ driver.country }}</p> <p><strong>Team:</strong> {{ getTeamName(driver.teamID) }}</p> </div> </mat-card-content> </mat-card> } @empty { <div class="no-data"> <p>There are no drivers in the database.</p> </div> } </div> </div>
+```
+
+# pages\drivers\drivers.component.scss
+
+```scss
+.drivers-container { padding: 16px; h1 { margin-bottom: 24px; text-align: center; font-family: 'Raceline', sans-serif; font-size: 2.5rem; color: white; text-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); } } .error-container, .no-data { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 32px 0; p { margin-top: 16px; } } .drivers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; } .driver-card { background-size: cover !important; color: white; position: relative; overflow: hidden; &::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #8d0000 0%, #ff2800 100%); } mat-card-header { padding-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); mat-card-title { font-family: 'Raceline', sans-serif; font-size: 1.4rem; color: #8d0000; } } mat-card-content { .driver-info { p { display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(255, 255, 255, 0.1); padding: 8px 0; color: #8d0000; strong { color: #8d0000; } } } } } @media (max-width: 599px) { .drivers-grid { grid-template-columns: 1fr; } }
+```
+
+# pages\drivers\drivers.component.spec.ts
+
+```ts
+import { ComponentFixture, TestBed } from '@angular/core/testing'; import { DriversComponent } from './drivers.component'; describe('DriversComponent', () => { let component: DriversComponent; let fixture: ComponentFixture<DriversComponent>; beforeEach(async () => { await TestBed.configureTestingModule({ imports: [DriversComponent] }) .compileComponents(); fixture = TestBed.createComponent(DriversComponent); component = fixture.componentInstance; fixture.detectChanges(); }); it('should create', () => { expect(component).toBeTruthy(); }); });
+```
+
+# pages\drivers\drivers.component.ts
+
+```ts
+import { Component, OnInit } from '@angular/core'; import { CommonModule } from '@angular/common'; import { RouterModule } from '@angular/router'; import { MatCardModule } from '@angular/material/card'; import { MatButtonModule } from '@angular/material/button'; import { Driver } from '../../shared/models/Driver'; import { Team } from '../../shared/models/Team'; import { TeamService } from '../../shared/services/team.service'; import { FirestoreDataService } from '../../shared/services/firestore-data.service'; @Component({ selector: 'app-drivers', standalone: true, imports: [ CommonModule, RouterModule, MatCardModule, MatButtonModule ], templateUrl: './drivers.component.html', styleUrl: './drivers.component.scss' }) export class DriversComponent implements OnInit { drivers: Driver[] = []; teams: Team[] = []; constructor(private firestoreService: FirestoreDataService) {} ngOnInit(): void { this.firestoreService.getDrivers().subscribe(drivers => this.drivers = drivers); this.firestoreService.getTeams().subscribe(teams => this.teams = teams); } getFullName(driver: Driver): string { return `${driver.name.firstname} ${driver.name.lastname}`; } getTeamName(teamId: string): string { return this.teams.find(t => t.teamID === teamId)?.name || 'unknown'; } }
+```
+
+# pages\home\home.component.html
+
+```html
+<h1 class="title">Welcome to BoxBox!</h1> <div class> <mat-card class="container"> <h1>Race Countdown Timer</h1> <app-countdown [targetDates]="raceDates" [restartDelay]="10000" raceTimeMessage="It's race time!" #countdownRef> </app-countdown> <div class="text-countdown"> <p>Time until the next race: {{ countdownRef.getFormattedCountdown() }}</p> </div> </mat-card> <mat-card class="container latest-results"> @if (latestRaceTrack && latestResults.length > 0) { <h1>Latest Race Results</h1> <h2>{{ latestRaceTrack.trackName }} - {{ latestRaceTrack.country }}</h2> <div class="results-list"> @for (result of latestResults; track result.position) { <div class="result-item" [ngStyle]="{ 'background-color': getPositionColor(result.position), 'transform': result.position <= 3 ? 'scale(1.1)' : 'scale(1)' }"> <div class="position">{{ result.position }}</div> <div class="driver-info"> <div class="driver-name">{{ result.driverName }}</div> <div class="driver-country">{{ result.driverCountry }}</div> </div> </div> } </div> } @else { <h1>No Race Results Yet</h1> <p>Check back after the first race of the season!</p> } </mat-card> @if (isLoggedIn && userFavorites) { <mat-card class="favorite-card"> <h1>Your Favorites</h1> <div class="favorite-section"> <h3>Favorite Driver</h3> <div class="favorite-info"> <div class="favorite-name">{{userFavorites.driverName}}</div> <div class="favorite-stats"> <span>Position: {{userFavorites.driverPosition}}</span> <span>Points: {{userFavorites.driverPoints}}</span> </div> </div> </div> <div class="favorite-section"> <h3>Favorite Team</h3> <div class="favorite-info"> <div class="favorite-name">{{userFavorites.teamName}}</div> <div class="favorite-stats"> <span>Position: {{userFavorites.teamPosition}}</span> <span>Points: {{userFavorites.teamPoints}}</span> </div> </div> </div> </mat-card> } </div>
+```
+
+# pages\home\home.component.scss
+
+```scss
+* { color: #7e0000; } .title { margin-top: 50px; display: flex; justify-content: center; font-size: 4rem; color: #ffffff; text-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); font-family: 'Raceline', sans-serif; } .container { margin: 30px; padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); border-radius: 12px; min-height: 320px; display: flex; flex-direction: column; justify-content: center; align-items: center; } h1 { color: #8d0000; text-align: center; margin-bottom: 20px; font-family: 'Raceline'; } h2 { margin-bottom: 30px; font-size: 1.2rem; color: #555; } .text-countdown { font-size: 18px; font-weight: bold; } .latest-results { .results-list { flex-grow: 1; display: flex; flex-direction: column; gap: 10px; } .result-item { display: flex; align-items: center; padding: 10px; border-radius: 8px; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.3s ease; will-change: transform; .position { font-size: 24px; font-weight: bold; min-width: 40px; height: 40px; line-height: 40px; text-align: center; border-radius: 50%; background-color: #7e0000; color: white; margin-right: 15px; transition: all 0.3s ease; } .driver-info { text-align: left; .driver-name { font-weight: 500; font-size: 16px; color: #ffffff; transition: all 0.3s ease; } .driver-country { font-size: 14px; color: #ffffff; transition: all 0.3s ease; } } &:hover { transform: translateX(5px) scale(var(--item-scale, 1)) !important; .position { transform: scale(1.1); } .driver-name { font-weight: 600; } } } } .favorite-card { border-radius: 12px; margin: 30px; padding: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); min-height: 320px; display: flex; flex-direction: column; h2 { color: #8d0000; text-align: center; margin-bottom: 20px; font-family: 'Raceline'; } .favorite-section { margin-bottom: 20px; padding: 15px; border-radius: 8px; h3 { margin-top: 0; color: #7e0000; border-bottom: 1px solid #ddd; padding-bottom: 8px; } .favorite-info { display: flex; justify-content: space-between; align-items: center; .favorite-name { font-size: 18px; font-weight: 500; } .favorite-stats { span { display: inline-block; margin-left: 15px; font-size: 16px; &:first-child { color: #7e0000; font-weight: 500; } } } } } } @media only screen and (max-width: 690px) { .title { font-size: 2.8rem; } }
+```
+
+# pages\home\home.component.spec.ts
+
+```ts
+import { ComponentFixture, TestBed } from '@angular/core/testing'; import { HomeComponent } from './home.component'; describe('HomeComponent', () => { let component: HomeComponent; let fixture: ComponentFixture<HomeComponent>; beforeEach(async () => { await TestBed.configureTestingModule({ imports: [HomeComponent] }) .compileComponents(); fixture = TestBed.createComponent(HomeComponent); component = fixture.componentInstance; fixture.detectChanges(); }); it('should create', () => { expect(component).toBeTruthy(); }); });
+```
+
+# pages\home\home.component.ts
+
+```ts
+import { Component, OnInit, OnDestroy } from '@angular/core'; import { CommonModule } from '@angular/common'; import { CountdownComponent } from '../../shared/countdown/countdown.component'; import { MatCardModule } from '@angular/material/card'; import { Track } from '../../shared/models/Track'; import { Driver } from '../../shared/models/Driver'; import { FirestoreDataService } from '../../shared/services/firestore-data.service'; import { StandingsService } from '../../shared/services/standings.service'; import { AuthService } from '../../shared/services/auth.service'; import { Subscription } from 'rxjs'; interface LatestRaceResult { position: number; driverName: string; driverCountry: string; } interface UserFavorites { driverName: string; driverPosition: number; driverPoints: number; teamName: string; teamPosition: number; teamPoints: number; } @Component({ selector: 'app-home', standalone: true, imports: [CommonModule, CountdownComponent, MatCardModule], templateUrl: './home.component.html', styleUrl: './home.component.scss' }) export class HomeComponent implements OnInit, OnDestroy { raceDates: Date[] = []; tracks: Track[] = []; drivers: Driver[] = []; latestResults: LatestRaceResult[] = []; latestRaceTrack: Track | null = null; isLoggedIn: boolean = false; userFavorites: UserFavorites | null = null; private userProfileSubscription?: Subscription; constructor( private firestoreService: FirestoreDataService, private standingsService: StandingsService, private authService: AuthService ) {} ngOnInit(): void { this.firestoreService.getTracks().subscribe(tracks => { this.tracks = tracks.map(track => ({ ...track, date: track.date instanceof Date ? track.date : new Date(track.date) })).sort((a, b) => a.date.getTime() - b.date.getTime()); this.raceDates = this.tracks.map(t => t.date); this.findLatestRaceResults(); }); this.firestoreService.getDrivers().subscribe(drivers => this.drivers = drivers); this.userProfileSubscription = this.authService.userProfile.subscribe(profile => { this.isLoggedIn = !!profile; if (profile) this.loadUserFavorites(profile); }); } ngOnDestroy(): void { this.userProfileSubscription?.unsubscribe(); } private findLatestRaceResults(): void { this.firestoreService.getRaceResults().subscribe(results => { const today = new Date(); const completed = this.tracks.filter(track => track.date < today); if (completed.length === 0) return; const latest = completed[completed.length - 1]; this.latestRaceTrack = latest; const race = results.find(r => r.trackID === latest.trackID); if (race) { this.latestResults = race.results .filter(r => r.position <= 5) .sort((a, b) => a.position - b.position) .map(r => { const driver = this.drivers.find(d => d.driverID === r.driverID); return { position: r.position, driverName: driver ? `${driver.name.firstname} ${driver.name.lastname}` : 'Unknown', driverCountry: driver?.country || '' }; }); } }); } private loadUserFavorites(user: any): void { if (!user.favDriverID || !user.favTeamID) return; this.firestoreService.getDrivers().subscribe(drivers => { this.firestoreService.getTeams().subscribe(teams => { this.firestoreService.getRaceResults().subscribe(results => { const driverMap = new Map<string, number>(); const teamMap = new Map<string, number>(); const driverPoints: Record<string, number> = {}; const teamPoints: Record<string, number> = {}; results.forEach(race => { race.results.forEach(result => { driverPoints[result.driverID] = (driverPoints[result.driverID] || 0) + result.points; const driver = drivers.find(d => d.driverID === result.driverID); if (driver) { teamPoints[driver.teamID] = (teamPoints[driver.teamID] || 0) + result.points; } }); }); const sortedDrivers = [...drivers].sort((a, b) => (driverPoints[b.driverID] || 0) - (driverPoints[a.driverID] || 0)); const sortedTeams = [...teams].sort((a, b) => (teamPoints[b.teamID] || 0) - (teamPoints[a.teamID] || 0)); const favDriver = sortedDrivers.find(d => d.driverID === user.favDriverID); const favTeam = sortedTeams.find(t => t.teamID === user.favTeamID); if (favDriver && favTeam) { this.userFavorites = { driverName: `${favDriver.name.firstname} ${favDriver.name.lastname}`, driverPosition: sortedDrivers.indexOf(favDriver) + 1, driverPoints: driverPoints[favDriver.driverID] || 0, teamName: favTeam.name, teamPosition: sortedTeams.indexOf(favTeam) + 1, teamPoints: teamPoints[favTeam.teamID] || 0 }; } }); }); }); } getPositionColor(position: number): string { const colors = { 1: '#FFD700', 2: '#C0C0C0', 3: '#CD7F32', 4: '#8d0000', 5: '#8d0000' }; return colors[position as keyof typeof colors]; } }
+```
+
+# pages\login\login.component.html
+
+```html
+<div class="login-container"> <h1>Login</h1> <form (ngSubmit)="login()" class="login-form"> <mat-form-field appearance="outline"> <mat-label>Email</mat-label> <input matInput type="email" [formControl]="email"> <mat-icon matSuffix>email</mat-icon> </mat-form-field> <mat-form-field appearance="outline"> <mat-label>Password</mat-label> <input matInput type="password" [formControl]="password"> <mat-icon matSuffix>lock</mat-icon> </mat-form-field> @if (loginError) { <div class="error-message"> {{ loginError }} </div> } <button mat-flat-button color="primary" type="submit">Login</button> <button mat-flat-button [routerLink]="['/signup']">Register</button> </form> </div>
+```
+
+# pages\login\login.component.scss
+
+```scss
+.login-container { max-width: 400px; margin: 40px auto; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); text-align: center; background-color: #ffedea; h1 { margin-bottom: 20px; color: #8d0000; font-family: 'Raceline'; } } .login-form { display: flex; flex-direction: column; gap: 16px; } .error-message { color: #f44336; margin-bottom: 16px; }
+```
+
+# pages\login\login.component.spec.ts
+
+```ts
+import { ComponentFixture, TestBed } from '@angular/core/testing'; import { LoginComponent } from './login.component'; describe('LoginComponent', () => { let component: LoginComponent; let fixture: ComponentFixture<LoginComponent>; beforeEach(async () => { await TestBed.configureTestingModule({ imports: [LoginComponent] }) .compileComponents(); fixture = TestBed.createComponent(LoginComponent); component = fixture.componentInstance; fixture.detectChanges(); }); it('should create', () => { expect(component).toBeTruthy(); }); });
+```
+
+# pages\login\login.component.ts
+
+```ts
+import { Component, OnDestroy } from '@angular/core'; import { RouterLink, Router } from '@angular/router'; import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'; import { MatFormFieldModule } from '@angular/material/form-field'; import { MatInputModule } from '@angular/material/input'; import { MatButtonModule } from '@angular/material/button'; import { MatIconModule } from '@angular/material/icon'; import { CommonModule } from '@angular/common'; import { AuthService } from '../../shared/services/auth.service'; import { Subscription } from 'rxjs'; import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'; @Component({ selector: 'app-login', standalone: true, imports: [ CommonModule, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule, RouterLink ], templateUrl: './login.component.html', styleUrl: './login.component.scss' }) export class LoginComponent implements OnDestroy { email = new FormControl('', [Validators.required, Validators.email]); password = new FormControl('', [Validators.required, Validators.minLength(6)]); isLoading: boolean = false; loginError: string = ''; authSubscription?: Subscription; constructor( private authService: AuthService, private router: Router ) { // Ha már be van jelentkezve, irányítsuk át a főoldalra this.authSubscription = this.authService.currentUser.subscribe(user => { if (user) { this.router.navigateByUrl('/home'); } }); } async login(): Promise<void> { // Return early if invalid inputs if (this.email.invalid) { this.loginError = 'Please enter a valid email address'; return; } if (this.password.invalid) { this.loginError = 'Password must be at least 6 characters'; return; } const emailValue = this.email.value || ''; const passwordValue = this.password.value || ''; this.isLoading = true; this.loginError = ''; try { await this.authService.signIn(emailValue, passwordValue); // Bejelentkezés után elnavigálunk a főoldalra // (most már az AuthService.signIn metódusban van kezelve) } catch (error: any) { this.loginError = this.getFirebaseErrorMessage(error.code); console.error('Login error:', error); } finally { this.isLoading = false; } } private getFirebaseErrorMessage(code: string): string { const map: Record<string, string> = { 'auth/user-not-found': 'No account found with this email.', 'auth/wrong-password': 'Incorrect password.', 'auth/invalid-credential': 'Invalid email or password.', 'auth/too-many-requests': 'Too many failed attempts. Try again later.' }; return map[code] || 'Login failed. Please try again.'; } ngOnDestroy() { this.authSubscription?.unsubscribe(); } }
+```
+
+# pages\profile\profile.component.html
+
+```html
+<div class="profile-container"> <mat-card class="profile-card"> <mat-card-header> <div mat-card-avatar class="profile-avatar"> <mat-icon>account_circle</mat-icon> </div> <mat-card-title>{{ user?.name?.firstname }} {{ user?.name?.lastname }}</mat-card-title> <mat-card-subtitle>F1 Fan</mat-card-subtitle> </mat-card-header> <mat-card-content> <div class="profile-details"> <div class="detail-row"> <mat-icon>email</mat-icon> <span>{{ user?.email || 'N/A' }}</span> </div> <div class="favorites-section"> <h3>Your Favorites</h3> @if (favoriteDriver) { <div class="favorite-item"> <mat-icon>sports_motorsports</mat-icon> <div> <strong>Driver:</strong> {{ favoriteDriver.name.firstname }} {{ favoriteDriver.name.lastname }} <small>(#{{ favoriteDriver.raceNumber }})</small> </div> </div> } @if (favoriteTeam) { <div class="favorite-item"> <mat-icon>groups</mat-icon> <div> <strong>Team:</strong> {{ favoriteTeam.name }} <small>({{ favoriteTeam.base }})</small> </div> </div> } </div> </div> </mat-card-content> <mat-card-actions> <button mat-button color="primary"> <mat-icon>edit</mat-icon> Edit Profile </button> </mat-card-actions> </mat-card> </div>
+```
+
+# pages\profile\profile.component.scss
+
+```scss
+.profile-container { margin-top: 50px; padding: 24px; display: flex; justify-content: center; } .profile-card { max-width: 600px; width: 100%; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); border-radius: 12px; overflow: hidden; } .profile-avatar { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background-color: #8d0000; color: white; mat-icon { transform: scale(1.8); } } .profile-details { padding: 16px; .detail-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 16px; mat-icon { color: #8d0000; } } } .favorites-section { margin-top: 24px; padding-top: 16px; border-top: 1px solid #eee; h3 { color: #8d0000; margin-bottom: 16px; } .favorite-item { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; padding: 8px; border-radius: 8px; background-color: #8d000063; transition: all 0.3s; &:hover { background-color: #8d00009e; transform: translateX(4px); } mat-icon { color: #7e0000; } } }
+```
+
+# pages\profile\profile.component.spec.ts
+
+```ts
+import { ComponentFixture, TestBed } from '@angular/core/testing'; import { ProfileComponent } from './profile.component'; describe('ProfileComponent', () => { let component: ProfileComponent; let fixture: ComponentFixture<ProfileComponent>; beforeEach(async () => { await TestBed.configureTestingModule({ imports: [ProfileComponent] }) .compileComponents(); fixture = TestBed.createComponent(ProfileComponent); component = fixture.componentInstance; fixture.detectChanges(); }); it('should create', () => { expect(component).toBeTruthy(); }); });
+```
+
+# pages\profile\profile.component.ts
+
+```ts
+import { Component, OnInit, OnDestroy } from '@angular/core'; import { CommonModule } from '@angular/common'; import { MatCardModule } from '@angular/material/card'; import { MatIconModule } from '@angular/material/icon'; import { MatButtonModule } from '@angular/material/button'; import { Driver } from '../../shared/models/Driver'; import { Team } from '../../shared/models/Team'; import { User } from '../../shared/models/User'; import { AuthService } from '../../shared/services/auth.service'; import { FirestoreDataService } from '../../shared/services/firestore-data.service'; import { Subscription } from 'rxjs'; @Component({ selector: 'app-profile', standalone: true, imports: [CommonModule, MatCardModule, MatIconModule, MatButtonModule], templateUrl: './profile.component.html', styleUrls: ['./profile.component.scss'] }) export class ProfileComponent implements OnInit, OnDestroy { user: User | null = null; favoriteDriver: Driver | undefined; favoriteTeam: Team | undefined; drivers: Driver[] = []; teams: Team[] = []; private userSubscription?: Subscription; constructor( private authService: AuthService, private firestoreService: FirestoreDataService ) {} ngOnInit(): void { this.firestoreService.getDrivers().subscribe(drivers => { this.drivers = drivers; this.trySetFavorites(); }); this.firestoreService.getTeams().subscribe(teams => { this.teams = teams; this.trySetFavorites(); }); this.userSubscription = this.authService.userProfile.subscribe(profile => { this.user = profile; this.trySetFavorites(); }); } ngOnDestroy(): void { this.userSubscription?.unsubscribe(); } private trySetFavorites(): void { if (!this.user || this.drivers.length === 0 || this.teams.length === 0) return; this.favoriteDriver = this.drivers.find(d => d.driverID === this.user?.favDriverID); this.favoriteTeam = this.teams.find(t => t.teamID === this.user?.favTeamID); } }
+```
+
+# pages\results\results.component.html
+
+```html
+<div class="results-container"> @if (track) { <div class="race-header"> <h1>{{ track.trackName }} Results</h1> <h2>{{ track.country }} - {{ formatDate(track.date.toString()) }}</h2> <button mat-button class="butt" routerLink="/tracks">Back to Tracks</button> </div> } @if (raceResults.length) { <mat-card> <mat-card-content> <table mat-table [dataSource]="raceResults" class="results-table"> <ng-container matColumnDef="position"> <th mat-header-cell *matHeaderCellDef> Position </th> <td mat-cell *matCellDef="let result"> {{ result.position }} </td> </ng-container> <ng-container matColumnDef="driver"> <th mat-header-cell *matHeaderCellDef> Driver </th> <td mat-cell *matCellDef="let result"> {{ getDriverName(result.driverID) }} <div class="driver-country">{{ getDriverCountry(result.driverID) }}</div> </td> </ng-container> <ng-container matColumnDef="time"> <th mat-header-cell *matHeaderCellDef> Race Time </th> <td mat-cell *matCellDef="let result"> {{ result.time }} </td> </ng-container> <ng-container matColumnDef="points"> <th mat-header-cell *matHeaderCellDef> Points </th> <td mat-cell *matCellDef="let result"> {{ result.points }} </td> </ng-container> <ng-container matColumnDef="fastestLap"> <th mat-header-cell *matHeaderCellDef> Fastest Lap </th> <td mat-cell *matCellDef="let result"> @if (result.fastestLap) { <mat-icon color="accent">timer</mat-icon> } </td> </ng-container> <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr> <tr mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="{ 'gold': row.position === 1, 'silver': row.position === 2, 'bronze': row.position === 3 }"> </table> </mat-card-content> </mat-card> } @else { <div class="no-results"> <p>No results available for this race.</p> </div> } </div>
+```
+
+# pages\results\results.component.scss
+
+```scss
+.results-container { padding: 16px; .race-header { text-align: center; margin-bottom: 24px; h1 { margin-bottom: 14px; text-align: center; font-family: 'Raceline', sans-serif; font-size: 2.5rem; color: white; text-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); } h2 { margin-bottom: 16px; font-weight: normal; color: white; } .butt { color: #e1adad !important; } } } .results-table { width: 100%; background-color: transparent; .gold { background-color: rgba(255, 215, 0, 0.1) !important; } .silver { background-color: rgba(192, 192, 192, 0.1) !important; } .bronze { background-color: rgba(205, 127, 50, 0.1) !important; } .driver-country { font-size: 12px; color: rgba(0, 0, 0, 0.6); } } .no-results { display: flex; justify-content: center; margin-top: 32px; } @media (max-width: 599px) { .results-table { .mat-mdc-cell { font-size: 14px; padding: 8px; } .mat-mdc-header-cell { font-size: 14px; padding: 8px; } } }
+```
+
+# pages\results\results.component.spec.ts
+
+```ts
+import { ComponentFixture, TestBed } from '@angular/core/testing'; import { ResultsComponent } from './results.component'; describe('ResultsComponent', () => { let component: ResultsComponent; let fixture: ComponentFixture<ResultsComponent>; beforeEach(async () => { await TestBed.configureTestingModule({ imports: [ResultsComponent] }) .compileComponents(); fixture = TestBed.createComponent(ResultsComponent); component = fixture.componentInstance; fixture.detectChanges(); }); it('should create', () => { expect(component).toBeTruthy(); }); });
+```
+
+# pages\results\results.component.ts
+
+```ts
+import { Component, OnInit } from '@angular/core'; import { CommonModule } from '@angular/common'; import { ActivatedRoute, RouterModule } from '@angular/router'; import { MatCardModule } from '@angular/material/card'; import { MatTableModule } from '@angular/material/table'; import { MatIconModule } from '@angular/material/icon'; import { MatButtonModule } from '@angular/material/button'; import { RaceResults, Result } from '../../shared/models/RaceResult'; import { Driver } from '../../shared/models/Driver'; import { Track } from '../../shared/models/Track'; import { TeamService } from '../../shared/services/team.service'; import { FirestoreDataService } from '../../shared/services/firestore-data.service'; @Component({ selector: 'app-race-results', standalone: true, imports: [CommonModule, RouterModule, MatCardModule, MatTableModule, MatIconModule, MatButtonModule], templateUrl: './results.component.html', styleUrl: './results.component.scss' }) export class ResultsComponent implements OnInit { trackID: string | null = null; raceResults: Result[] = []; track: Track | null = null; drivers: Driver[] = []; displayedColumns: string[] = ['position', 'driver', 'time', 'points', 'fastestLap']; constructor( private route: ActivatedRoute, private teamService: TeamService, private firestoreService: FirestoreDataService ) {} ngOnInit(): void { this.trackID = this.route.snapshot.paramMap.get('id'); if (!this.trackID) return; this.firestoreService.getDrivers().subscribe(drivers => this.drivers = drivers); this.firestoreService.getTracks().subscribe(tracks => { const match = tracks.find(t => t.trackID === this.trackID); if (match) { this.track = { ...match, date: new Date(match.date) }; } }); this.firestoreService.getRaceResults().subscribe(results => { const race = results.find(r => r.trackID === this.trackID); if (race) this.raceResults = race.results; }); } getDriverName(driverId: string): string { return this.teamService.getFullName(driverId); } getDriverCountry(driverId: string): string { return this.drivers.find(d => d.driverID === driverId)?.country || ''; } formatDate(dateString: string): string { const date = new Date(dateString); return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); } }
+```
+
+# pages\signup\signup.component.html
+
+```html
+<div class="signup-container"> <h1>Create Account</h1> @if (showForm) { <form [formGroup]="signUpForm" (ngSubmit)="signup()" class="signup-form"> <mat-form-field appearance="outline"> <mat-label>Email</mat-label> <input matInput type="email" formControlName="email"> <mat-icon matSuffix>email</mat-icon> </mat-form-field> <div class="name-row" formGroupName="name"> <mat-form-field appearance="outline"> <mat-label>First Name</mat-label> <input matInput formControlName="firstname"> <mat-icon matSuffix>person</mat-icon> </mat-form-field> <mat-form-field appearance="outline"> <mat-label>Last Name</mat-label> <input matInput formControlName="lastname"> <mat-icon matSuffix>person</mat-icon> </mat-form-field> </div> <mat-form-field appearance="outline"> <mat-label>Password</mat-label> <input matInput type="password" formControlName="password"> <mat-icon matSuffix>lock</mat-icon> </mat-form-field> <mat-form-field appearance="outline"> <mat-label>Confirm Password</mat-label> <input matInput type="password" formControlName="rePassword"> <mat-icon matSuffix>lock</mat-icon> </mat-form-field> <mat-form-field appearance="outline"> <mat-label>Favorite Driver</mat-label> <mat-select formControlName="favDriver"> @for (driver of drivers; track driver.driverID) { <mat-option [value]="driver.driverID">{{getFullName(driver)}}</mat-option> } </mat-select> <mat-icon matSuffix>sports_motorsports</mat-icon> </mat-form-field> <mat-form-field appearance="outline"> <mat-label>Favorite Team</mat-label> <mat-select formControlName="favTeam"> @for (team of teams; track team.teamID) { <mat-option [value]="team.teamID">{{team.name}}</mat-option> } </mat-select> <mat-icon matSuffix>flag</mat-icon> </mat-form-field> <div class="buttons-row"> <button mat-flat-button color="primary" type="submit">Register</button> <button mat-flat-button [routerLink]="['/login']">Already have an account?</button> </div> </form> } </div>
+```
+
+# pages\signup\signup.component.scss
+
+```scss
+.signup-container { max-width: 500px; margin: 40px auto; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); text-align: center; background-color: #ffedea; h1 { color: #8d0000; font-family: 'Raceline'; } } .signup-form { display: flex; flex-direction: column; gap: 16px; } .name-row { display: flex; gap: 16px; } .buttons-row { display: flex; gap: 16px; justify-content: center; margin-top: 16px; } @media (max-width: 576px) { .name-row, .buttons-row { flex-direction: column; } }
+```
+
+# pages\signup\signup.component.spec.ts
+
+```ts
+import { ComponentFixture, TestBed } from '@angular/core/testing'; import { SignupComponent } from './signup.component'; describe('SignupComponent', () => { let component: SignupComponent; let fixture: ComponentFixture<SignupComponent>; beforeEach(async () => { await TestBed.configureTestingModule({ imports: [SignupComponent] }) .compileComponents(); fixture = TestBed.createComponent(SignupComponent); component = fixture.componentInstance; fixture.detectChanges(); }); it('should create', () => { expect(component).toBeTruthy(); }); });
+```
+
+# pages\signup\signup.component.ts
+
+```ts
+import { Component } from '@angular/core'; import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms'; import { RouterLink } from '@angular/router'; import { CommonModule } from '@angular/common'; import { MatFormFieldModule } from '@angular/material/form-field'; import { MatSelect } from '@angular/material/select'; import { MatOption } from '@angular/material/select'; import { MatInputModule } from '@angular/material/input'; import { MatButtonModule } from '@angular/material/button'; import { MatIconModule } from '@angular/material/icon'; import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'; import { User } from '../../shared/models/User'; import { Driver } from '../../shared/models/Driver'; import { Team } from '../../shared/models/Team'; import { AuthService } from '../../shared/services/auth.service'; import driversData from '../../../../public/data/drivers.json'; import teamsData from '../../../../public/data/teams.json'; @Component({ selector: 'app-signup', standalone: true, imports: [ CommonModule, ReactiveFormsModule, MatFormFieldModule, MatSelect, MatOption, MatInputModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule, RouterLink ], templateUrl: './signup.component.html', styleUrl: './signup.component.scss' }) export class SignupComponent { signUpForm = new FormGroup({ email: new FormControl('', [Validators.required, Validators.email]), password: new FormControl('', [Validators.required, Validators.minLength(6)]), rePassword: new FormControl('', [Validators.required]), name: new FormGroup({ firstname: new FormControl('', [Validators.required, Validators.minLength(2)]), lastname: new FormControl('', [Validators.required, Validators.minLength(2)]) }), favDriver: new FormControl('', [Validators.required]), favTeam: new FormControl('', [Validators.required]) }); drivers: Driver[] = driversData; teams: Team[] = teamsData; showForm = true; isLoading = false; signupError = ''; constructor(private authService: AuthService) {} async signup(): Promise<void> { if (this.signUpForm.invalid) { this.signupError = 'Please correct the form errors before submitting.'; return; } const password = this.signUpForm.get('password')?.value; const rePassword = this.signUpForm.get('rePassword')?.value; if (password !== rePassword) { this.signupError = 'Passwords do not match.'; return; } this.showForm = false; this.isLoading = true; this.signupError = ''; const userData: Partial<User> = { name: { firstname: this.signUpForm.value.name?.firstname || '', lastname: this.signUpForm.value.name?.lastname || '' }, email: this.signUpForm.value.email || '', favDriverID: this.signUpForm.value.favDriver || '', favTeamID: this.signUpForm.value.favTeam || '' }; const email = this.signUpForm.value.email || ''; const pw = this.signUpForm.value.password || ''; try { await this.authService.signUp(email, pw, userData); // Navigation is handled in the AuthService } catch (error: any) { this.signupError = this.getFirebaseErrorMessage(error.code); this.showForm = true; } finally { this.isLoading = false; } } private getFirebaseErrorMessage(code: string): string { const map: Record<string, string> = { 'auth/email-already-in-use': 'This email is already in use.', 'auth/invalid-email': 'Invalid email address.', 'auth/weak-password': 'Password is too weak (min. 6 characters).', }; return map[code] || 'An error occurred. Please try again.'; } getFullName(driver: Driver): string { return `${driver.name.firstname} ${driver.name.lastname}`; } }
+```
+
+# pages\standings\standings.component.html
+
+```html
+<div class="standings-container"> <h1>Championship Standings</h1> <div class="button-group"> <mat-button-toggle-group [value]="selectedState" (change)="onChange($event)"> <mat-button-toggle [value]="toggleEnum.Driver">Driver Standings</mat-button-toggle> <mat-button-toggle [value]="toggleEnum.Constructor">Constructor Standings</mat-button-toggle> </mat-button-toggle-group> </div> <div class="content"> @if (selectedState === toggleEnum.null) { <div class="no-selection"> <p>Select Driver or Constructor standings to view the championship results.</p> </div> } @else if (selectedState === toggleEnum.Driver) { <div class="driver-standings"> <mat-card> <mat-card-content> <table mat-table [dataSource]="driverStandings" class="standings-table"> <ng-container matColumnDef="position"> <th mat-header-cell *matHeaderCellDef> Pos </th> <td mat-cell *matCellDef="let driver; let i = index"> {{ i + 1 }} </td> </ng-container> <ng-container matColumnDef="driver"> <th mat-header-cell *matHeaderCellDef> Driver </th> <td mat-cell *matCellDef="let driver"> <div class="driver-info"> <span class="driver-name">{{ driver.name }}</span> <span class="driver-country">{{ driver.country }}</span> </div> </td> </ng-container> <ng-container matColumnDef="team"> <th mat-header-cell *matHeaderCellDef> Team </th> <td mat-cell *matCellDef="let driver"> {{ driver.team }} </td> </ng-container> <ng-container matColumnDef="points"> <th mat-header-cell *matHeaderCellDef> Points </th> <td mat-cell *matCellDef="let driver"> <strong>{{ driver.points }}</strong> </td> </ng-container> <ng-container matColumnDef="wins"> <th mat-header-cell *matHeaderCellDef> Wins </th> <td mat-cell *matCellDef="let driver"> {{ driver.wins }} </td> </ng-container> <tr mat-header-row *matHeaderRowDef="driverDisplayedColumns"></tr> <tr mat-row *matRowDef="let row; columns: driverDisplayedColumns;"></tr> </table> </mat-card-content> </mat-card> </div> } @else if (selectedState === toggleEnum.Constructor) { <div class="team-standings"> <mat-card> <mat-card-content> <table mat-table [dataSource]="teamStandings" class="standings-table"> <ng-container matColumnDef="position"> <th mat-header-cell *matHeaderCellDef> Pos </th> <td mat-cell *matCellDef="let team; let i = index"> {{ i + 1 }} </td> </ng-container> <ng-container matColumnDef="team"> <th mat-header-cell *matHeaderCellDef> Team </th> <td mat-cell *matCellDef="let team"> {{ team.name }} </td> </ng-container> <ng-container matColumnDef="points"> <th mat-header-cell *matHeaderCellDef> Points </th> <td mat-cell *matCellDef="let team"> <strong>{{ team.points }}</strong> </td> </ng-container> <ng-container matColumnDef="wins"> <th mat-header-cell *matHeaderCellDef> Wins </th> <td mat-cell *matCellDef="let team"> {{ team.wins }} </td> </ng-container> <tr mat-header-row *matHeaderRowDef="teamDisplayedColumns"></tr> <tr mat-row *matRowDef="let row; columns: teamDisplayedColumns;"></tr> </table> </mat-card-content> </mat-card> </div> } </div> </div>
+```
+
+# pages\standings\standings.component.scss
+
+```scss
+.standings-container { max-width: 1000px; margin: 0 auto; padding: 20px; h1 { margin-bottom: 24px; text-align: center; font-family: 'Raceline', sans-serif; font-size: 2.5rem; color: white; text-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); } } .button-group { display: flex; justify-content: center; margin-bottom: 30px; ::ng-deep { .mat-button-toggle { color: #ffffff; font-weight: 500; } .mat-button-toggle-checked { color: #7e0000; } } } .no-selection { text-align: center; padding: 40px; font-size: 18px; color: #ffffff; } .standings-table { width: 100%; background-color: transparent; .driver-info { display: flex; flex-direction: column; .driver-name { font-weight: 500; } .driver-country { font-size: 0.85em; color: #666; } } } @media only screen and (max-width: 690px) { .standings-table { display: block; overflow: auto; } }
+```
+
+# pages\standings\standings.component.spec.ts
+
+```ts
+import { ComponentFixture, TestBed } from '@angular/core/testing'; import { StandingsComponent } from './standings.component'; describe('StandingsComponent', () => { let component: StandingsComponent; let fixture: ComponentFixture<StandingsComponent>; beforeEach(async () => { await TestBed.configureTestingModule({ imports: [StandingsComponent] }) .compileComponents(); fixture = TestBed.createComponent(StandingsComponent); component = fixture.componentInstance; fixture.detectChanges(); }); it('should create', () => { expect(component).toBeTruthy(); }); });
+```
+
+# pages\standings\standings.component.ts
+
+```ts
+import { Component, OnInit } from '@angular/core'; import { CommonModule } from '@angular/common'; import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle'; import { MatCardModule } from '@angular/material/card'; import { MatTableModule } from '@angular/material/table'; import { RouterModule } from '@angular/router'; import { FirestoreDataService } from '../../shared/services/firestore-data.service'; import { Driver, DriverStanding } from '../../shared/models/Driver'; import { Team, TeamStanding } from '../../shared/models/Team'; import { RaceResults } from '../../shared/models/RaceResult'; export enum Champs { null, Driver, Constructor } @Component({ selector: 'app-standings', standalone: true, imports: [CommonModule, MatButtonToggle, MatButtonToggleGroup, MatCardModule, MatTableModule, RouterModule], templateUrl: './standings.component.html', styleUrl: './standings.component.scss' }) export class StandingsComponent implements OnInit { toggleEnum = Champs; selectedState = Champs.null; driverStandings: DriverStanding[] = []; teamStandings: TeamStanding[] = []; drivers: Driver[] = []; teams: Team[] = []; results: RaceResults[] = []; driverDisplayedColumns: string[] = ['position', 'driver', 'team', 'points', 'wins']; teamDisplayedColumns: string[] = ['position', 'team', 'points', 'wins']; constructor(private firestoreService: FirestoreDataService) {} ngOnInit(): void { this.firestoreService.getDrivers().subscribe(drivers => { this.drivers = drivers; this.computeStandings(); }); this.firestoreService.getTeams().subscribe(teams => { this.teams = teams; this.computeStandings(); }); this.firestoreService.getRaceResults().subscribe(results => { this.results = results; this.computeStandings(); }); } private computeStandings(): void { if (this.drivers.length === 0 || this.teams.length === 0 || this.results.length === 0) return; const driverMap: Record<string, DriverStanding> = {}; const teamMap: Record<string, TeamStanding> = {}; for (const result of this.results) { for (const entry of result.results) { // Driver standings if (!driverMap[entry.driverID]) { const driver = this.drivers.find(d => d.driverID === entry.driverID); if (!driver) continue; const team = this.teams.find(t => t.teamID === driver.teamID); driverMap[entry.driverID] = { driverID: driver.driverID, name: `${driver.name.firstname} ${driver.name.lastname}`, country: driver.country, team: team?.name || 'Unknown', points: 0, wins: 0, podiums: 0 }; } driverMap[entry.driverID].points += entry.points; if (entry.position === 1) driverMap[entry.driverID].wins++; if (entry.position >= 1 && entry.position <= 3) { driverMap[entry.driverID].podiums++; } // Team standings const driver = this.drivers.find(d => d.driverID === entry.driverID); if (driver) { const teamID = driver.teamID; if (!teamMap[teamID]) { const team = this.teams.find(t => t.teamID === teamID); if (!team) continue; teamMap[teamID] = { teamID: teamID, name: team.name, points: 0, wins: 0 }; } teamMap[teamID].points += entry.points; if (entry.position === 1) teamMap[teamID].wins++; } } } this.driverStandings = Object.values(driverMap).sort((a, b) => b.points - a.points); this.teamStandings = Object.values(teamMap).sort((a, b) => b.points - a.points); } onChange($event: { value: Champs }): void { this.selectedState = $event.value; } }
+```
+
+# pages\teams\teams.component.html
+
+```html
+<div class="drivers-container"> <h1>Teams</h1> <div class="drivers-grid"> @for (team of teams; track team.teamID) { <mat-card class="driver-card"> <mat-card-header> <mat-card-title>{{ team.name }}</mat-card-title> <mat-card-subtitle></mat-card-subtitle> </mat-card-header> <mat-card-content> <div class="driver-info"> <p><strong>Base:</strong> {{ team.base }}</p> <p><strong>Principal:</strong> {{ team.principal }}</p> <p><strong>Driver1:</strong> {{ getDriver(team.driverIDs[0]) }}</p> <p><strong>Driver2:</strong> {{ getDriver(team.driverIDs[1]) }}</p> </div> </mat-card-content> </mat-card> } @empty { <div class="no-data"> <p>There are no teams in the database.</p> </div> } </div> </div>
+```
+
+# pages\teams\teams.component.scss
+
+```scss
+.drivers-container { padding: 16px; h1 { margin-bottom: 24px; text-align: center; font-family: 'Raceline', sans-serif; font-size: 2.5rem; color: white; text-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); } } .error-container, .no-data { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 32px 0; p { margin-top: 16px; } } .drivers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; } .driver-card { background-size: cover !important; color: white; position: relative; overflow: hidden; &::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #8d0000 0%, #ff2800 100%); } mat-card-header { padding-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); mat-card-title { font-family: 'Raceline', sans-serif; font-size: 1.4rem; color: #8d0000; } } mat-card-content { .driver-info { p { display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(255, 255, 255, 0.1); padding: 8px 0; color: #8d0000; strong { color: #8d0000; } } } } } @media (max-width: 599px) { .drivers-grid { grid-template-columns: 1fr; } }
+```
+
+# pages\teams\teams.component.spec.ts
+
+```ts
+import { ComponentFixture, TestBed } from '@angular/core/testing'; import { TeamsComponent } from './teams.component'; describe('TeamsComponent', () => { let component: TeamsComponent; let fixture: ComponentFixture<TeamsComponent>; beforeEach(async () => { await TestBed.configureTestingModule({ imports: [TeamsComponent] }) .compileComponents(); fixture = TestBed.createComponent(TeamsComponent); component = fixture.componentInstance; fixture.detectChanges(); }); it('should create', () => { expect(component).toBeTruthy(); }); });
+```
+
+# pages\teams\teams.component.ts
+
+```ts
+import { Component, OnInit } from '@angular/core'; import { CommonModule } from '@angular/common'; import { RouterModule } from '@angular/router'; import { MatCardModule } from '@angular/material/card'; import { MatButtonModule } from '@angular/material/button'; import { Driver } from '../../shared/models/Driver'; import { Team } from '../../shared/models/Team'; import { FirestoreDataService } from '../../shared/services/firestore-data.service'; @Component({ selector: 'app-teams', imports: [CommonModule, RouterModule, MatCardModule, MatButtonModule], templateUrl: './teams.component.html', styleUrl: './teams.component.scss' }) export class TeamsComponent implements OnInit { drivers: Driver[] = []; teams: Team[] = []; constructor(private firestoreService: FirestoreDataService) {} ngOnInit(): void { this.firestoreService.getDrivers().subscribe(drivers => this.drivers = drivers); this.firestoreService.getTeams().subscribe(teams => this.teams = teams); } getDriver(driverID: string): string { const driver = this.drivers.find(d => d.driverID === driverID); return driver ? `${driver.name.firstname} ${driver.name.lastname}` : 'Unknown'; } }
+```
+
+# pages\tracks\tracks.component.html
+
+```html
+<div class="tracks-container"> <h1>Formula 1 Tracks</h1> <div class="tracks-grid"> @for (track of tracks; track track.trackID) { <mat-card class="track-card"> <mat-card-header> <mat-card-title>{{ track.trackName }}</mat-card-title> <mat-card-subtitle>{{ track.country }}</mat-card-subtitle> </mat-card-header> <mat-card-content> <div class="track-info"> <p><strong>Length:</strong> {{ track.length }} km</p> <p><strong>Laps:</strong> {{ track.lapNumber }}</p> <p><strong>Race distance:</strong> {{ track.raceDist }} km</p> <p><strong>Date:</strong> {{ formatDisplayDate(track.date) }}</p> </div> </mat-card-content> <mat-card-actions> @if (isRaceCompleted(track.date)) { <button mat-button color="primary" [routerLink]="['/results', track.trackID]">View Results</button> } @else { <button mat-button disabled>Upcoming Race</button> } </mat-card-actions> </mat-card> } @empty { <div class="no-data"> <p>There are no tracks in the database.</p> </div> } </div> </div>
+```
+
+# pages\tracks\tracks.component.scss
+
+```scss
+.tracks-container { padding: 16px; h1 { margin-bottom: 24px; text-align: center; font-family: 'Raceline', sans-serif; font-size: 2.5rem; color: white; text-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); } } .tracks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; } .track-card { background-size: cover !important; color: white; position: relative; overflow: hidden; &::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #8d0000 0%, #ff2800 100%); } mat-card-header { padding-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); mat-card-title { font-family: 'Raceline', sans-serif; font-size: 1.4rem; color: #8d0000; } } mat-card-content { .track-info { p { display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(255, 255, 255, 0.1); padding: 8px 0; color: #8d0000; strong { color: #8d0000; } } } } } @media (max-width: 599px) { .tracks-grid { grid-template-columns: 1fr; } }
+```
+
+# pages\tracks\tracks.component.spec.ts
+
+```ts
+import { ComponentFixture, TestBed } from '@angular/core/testing'; import { TracksComponent } from './tracks.component'; describe('TracksComponent', () => { let component: TracksComponent; let fixture: ComponentFixture<TracksComponent>; beforeEach(async () => { await TestBed.configureTestingModule({ imports: [TracksComponent] }) .compileComponents(); fixture = TestBed.createComponent(TracksComponent); component = fixture.componentInstance; fixture.detectChanges(); }); it('should create', () => { expect(component).toBeTruthy(); }); });
+```
+
+# pages\tracks\tracks.component.ts
+
+```ts
+import { Component, OnInit } from '@angular/core'; import { CommonModule } from '@angular/common'; import { RouterModule } from '@angular/router'; import { MatCardModule } from '@angular/material/card'; import { MatButtonModule } from '@angular/material/button'; import { Track } from '../../shared/models/Track'; import { FirestoreDataService } from '../../shared/services/firestore-data.service'; @Component({ selector: 'app-tracks', standalone: true, imports: [CommonModule, RouterModule, MatCardModule, MatButtonModule], templateUrl: './tracks.component.html', styleUrl: './tracks.component.scss' }) export class TracksComponent implements OnInit { tracks: Track[] = []; constructor(private firestoreService: FirestoreDataService) {} ngOnInit(): void { this.firestoreService.getTracks().subscribe(tracks => { this.tracks = tracks.map(track => ({ ...track, date: new Date(track.date) })).sort((a, b) => a.date.getTime() - b.date.getTime()); }); } private formatDate(dateString: string): string { return dateString.replace(/(\d{4})\.(\d{2})\.(\d{2})\./, '$1-$2-$3'); } isRaceCompleted(raceDate: Date): boolean { return raceDate < new Date(); } formatDisplayDate(date: Date): string { return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); } }
+```
+
+# shared\countdown\countdown.component.html
+
+```html
+<div class="countdown-container"> <div *ngIf="!isRaceTime" class="countdown"> <div class="time-unit"> <span class="number">{{ days | countdownFormat:'days':true:false }}</span> <span class="label">{{ days === 1 ? ' day' : ' days' }}</span> </div> <div class="time-unit"> <span class="number">{{ hours | countdownFormat:'hours':true:false }}</span> <span class="label"> hours</span> </div> <div class="time-unit"> <span class="number">{{ minutes | countdownFormat:'minutes':true:false }}</span> <span class="label"> min</span> </div> <div class="time-unit"> <span class="number">{{ seconds | countdownFormat:'seconds':true:false }}</span> <span class="label"> sec</span> </div> </div> <div *ngIf="isRaceTime" class="race-time"> <h2>{{ raceTimeMessage }}</h2> </div> </div>
+```
+
+# shared\countdown\countdown.component.scss
+
+```scss
+.countdown-container { display: flex; width: 100%; align-items: center; justify-content: center; .time-unit { flex: 1; } }
+```
+
+# shared\countdown\countdown.component.spec.ts
+
+```ts
+import { ComponentFixture, TestBed } from '@angular/core/testing'; import { CountdownComponent } from './countdown.component'; describe('CountdownComponent', () => { let component: CountdownComponent; let fixture: ComponentFixture<CountdownComponent>; beforeEach(async () => { await TestBed.configureTestingModule({ imports: [CountdownComponent] }) .compileComponents(); fixture = TestBed.createComponent(CountdownComponent); component = fixture.componentInstance; fixture.detectChanges(); }); it('should create', () => { expect(component).toBeTruthy(); }); });
+```
+
+# shared\countdown\countdown.component.ts
+
+```ts
+import { Component, OnInit, OnDestroy, Input } from '@angular/core'; import { CommonModule } from '@angular/common'; import { CountdownFormatPipe } from '../pipes/countdown-format.pipe'; import { OnChanges, SimpleChanges } from '@angular/core'; @Component({ selector: 'app-countdown', templateUrl: './countdown.component.html', styleUrls: ['./countdown.component.scss'], standalone: true, imports: [CommonModule, CountdownFormatPipe], }) export class CountdownComponent implements OnInit, OnDestroy, OnChanges { @Input() targetDates: Date[] = []; @Input() restartDelay: number = 10000; @Input() raceTimeMessage: string = "It's race time!"; days: number = 0; hours: number = 0; minutes: number = 0; seconds: number = 0; isRaceTime: boolean = false; currentTargetIndex: number = 0; private intervalId?: number; constructor() {} ngOnInit(): void { if (this.targetDates?.length) { this.startCountdown(); } } ngOnChanges(changes: SimpleChanges): void { if (changes['targetDates'] && this.targetDates?.length) { this.startCountdown(); } } ngOnDestroy(): void { this.clearTimer(); } startCountdown(): void { this.clearTimer(); const now = Date.now(); while ( this.currentTargetIndex < this.targetDates.length && this.targetDates[this.currentTargetIndex].getTime() <= now ) { this.currentTargetIndex++; } if (this.currentTargetIndex >= this.targetDates.length) { this.isRaceTime = true; setTimeout(() => { this.currentTargetIndex = 0; this.isRaceTime = false; this.startCountdown(); }, this.restartDelay); return; } this.intervalId = window.setInterval(() => { const now = Date.now(); const currentTarget = this.targetDates[this.currentTargetIndex].getTime(); const distance = currentTarget - now; if (distance > 0) { this.isRaceTime = false; this.calculateTimeUnits(distance); } else { this.isRaceTime = true; this.days = this.hours = this.minutes = this.seconds = 0; this.clearTimer(); setTimeout(() => { this.currentTargetIndex++; this.isRaceTime = false; this.startCountdown(); }, this.restartDelay); } }, 1000); } clearTimer(): void { if (this.intervalId !== undefined) { clearInterval(this.intervalId); this.intervalId = undefined; } } calculateTimeUnits(distance: number): void { this.days = Math.floor(distance / (1000 * 60 * 60 * 24)); this.hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); this.minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)); this.seconds = Math.floor((distance % (1000 * 60)) / 1000); } getFormattedCountdown(): string { const formatter = new CountdownFormatPipe(); if (this.isRaceTime) { return this.raceTimeMessage; } return formatter.transform(this.days, 'days', false, true) + ' ' + formatter.transform(this.hours, 'hours', true, true) + ' ' + formatter.transform(this.minutes, 'minutes', true, true) + ' ' + formatter.transform(this.seconds, 'seconds', true, true); } }
+```
+
+# shared\guards\auth\auth.guard.spec.ts
+
+```ts
+import { TestBed } from '@angular/core/testing'; import { CanActivateFn } from '@angular/router'; import { authGuard } from './auth.guard'; describe('authGuard', () => { const executeGuard: CanActivateFn = (...guardParameters) => TestBed.runInInjectionContext(() => authGuard(...guardParameters)); beforeEach(() => { TestBed.configureTestingModule({}); }); it('should be created', () => { expect(executeGuard).toBeTruthy(); }); });
+```
+
+# shared\guards\auth\auth.guard.ts
+
+```ts
+import { CanActivateFn, Router } from '@angular/router'; import { inject } from '@angular/core'; import { AuthService } from '../../services/auth.service'; import { map, take } from 'rxjs/operators'; export const authGuard: CanActivateFn = (route, state) => { const router = inject(Router); const authService = inject(AuthService); return authService.currentUser.pipe( take(1), map(user => { if (user) { return true; } console.log('Access denied - Not authenticated'); router.navigate(['/login']); return false; }) ); }; export const publicGuard: CanActivateFn = (route, state) => { const router = inject(Router); const authService = inject(AuthService); return authService.currentUser.pipe( take(1), map(user => { if (!user) { return true; } console.log('Already authenticated, redirecting to home'); router.navigate(['/home']); return false; }) ); };
+```
+
+# shared\menu\menu.component.html
+
+```html
+<mat-nav-list> <a mat-list-item routerLink="/home" routerLinkActive="active-list-item" (click)="closeMenu()"> <mat-icon matListItemIcon>home</mat-icon> <span matListItemTitle>Home</span> </a> <a mat-list-item routerLink="/standings" routerLinkActive="active-list-item" (click)="closeMenu()"> <mat-icon matListItemIcon>emoji_events</mat-icon> <span matListItemTitle>Standings</span> </a> <a mat-list-item routerLink="/drivers" routerLinkActive="active-list-item" (click)="closeMenu()"> <mat-icon matListItemIcon>sports_motorsports</mat-icon> <span matListItemTitle>Drivers</span> </a> <a mat-list-item routerLink="/teams" routerLinkActive="active-list-item" (click)="closeMenu()"> <mat-icon matListItemIcon>directions_car</mat-icon> <span matListItemTitle>Teams</span> </a> <a mat-list-item routerLink="/tracks" routerLinkActive="active-list-item" (click)="closeMenu()"> <mat-icon matListItemIcon>place</mat-icon> <span matListItemTitle>Tracks</span> </a> <a mat-list-item routerLink="/profile" routerLinkActive="active-list-item" (click)="closeMenu()"> <mat-icon matListItemIcon>face</mat-icon> <span matListItemTitle>Profile</span> </a> </mat-nav-list>
+```
+
+# shared\menu\menu.component.scss
+
+```scss
+a { text-decoration: none; color: white; font-size: 20px; border-radius: 0 !important; } .mdc-list-item:focus::before { opacity: 0 !important; } .active-list-item { background-color: rgba(247, 74, 74, 0.3); font-weight: bold; } mat-nav-list { min-width: 200px; }
+```
+
+# shared\menu\menu.component.spec.ts
+
+```ts
+import { ComponentFixture, TestBed } from '@angular/core/testing'; import { MenuComponent } from './menu.component'; describe('MenuComponent', () => { let component: MenuComponent; let fixture: ComponentFixture<MenuComponent>; beforeEach(async () => { await TestBed.configureTestingModule({ imports: [MenuComponent] }) .compileComponents(); fixture = TestBed.createComponent(MenuComponent); component = fixture.componentInstance; fixture.detectChanges(); }); it('should create', () => { expect(component).toBeTruthy(); }); });
+```
+
+# shared\menu\menu.component.ts
+
+```ts
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, OnDestroy } from '@angular/core'; import { RouterLink, RouterLinkActive } from '@angular/router'; import { MatListModule } from '@angular/material/list' import { MatIconModule } from '@angular/material/icon'; import { MatSidenav } from '@angular/material/sidenav'; import { CommonModule } from '@angular/common'; import { AuthService } from '../services/auth.service'; import { Subscription } from 'rxjs'; @Component({ selector: 'app-menu', imports: [ CommonModule, RouterLink, RouterLinkActive, MatListModule, MatIconModule ], templateUrl: './menu.component.html', styleUrl: './menu.component.scss' }) export class MenuComponent implements OnInit, AfterViewInit, OnDestroy { @Input() sidenav!: MatSidenav; @Input() isLoggedIn: boolean = false; @Output() logoutEvent = new EventEmitter<void>(); private authSubscription?: Subscription; constructor(private authService: AuthService) { } ngOnInit(): void { } ngAfterViewInit(): void { } ngOnDestroy(): void { this.authSubscription?.unsubscribe(); } closeMenu() { if (this.sidenav) { this.sidenav.close(); } } logout() { this.authService.signOut().then(() => { this.logoutEvent.emit(); this.closeMenu(); }); } }
+```
+
+# shared\models\Driver.ts
+
+```ts
+export interface Driver { driverID : string; name: { firstname: string; lastname: string; }; raceNumber: number; country: string; teamID: string; } export interface DriverStanding { driverID: string; name: string; country: string; team: string; points: number; wins: number; podiums: number; }
+```
+
+# shared\models\RaceResult.ts
+
+```ts
+export interface Result { position: number; driverID: string; time: string; points: number; fastestLap: boolean; } export interface RaceResults { trackID: string; date: string; results: Result[]; }
+```
+
+# shared\models\Standings.ts
+
+```ts
+
+```
+
+# shared\models\Team.ts
+
+```ts
+export interface Team { teamID : string; name: string; base: string; principal: string; driverIDs: string[]; } export interface TeamStanding { teamID: string; name: string; points: number; wins: number; }
+```
+
+# shared\models\Track.ts
+
+```ts
+export interface Track { trackID: string; trackName: string; country: string; length: number; lapNumber: number; raceDist: number; date: Date; }
+```
+
+# shared\models\User.ts
+
+```ts
+export interface User { userID: string; name: { firstname: string; lastname: string; }; email: string; favDriverID : string; favTeamID: string; }
+```
+
+# shared\pipes\countdown-format.pipe.spec.ts
+
+```ts
+import { CountdownFormatPipe } from './countdown-format.pipe'; describe('CountdownFormatPipe', () => { it('create an instance', () => { const pipe = new CountdownFormatPipe(); expect(pipe).toBeTruthy(); }); });
+```
+
+# shared\pipes\countdown-format.pipe.ts
+
+```ts
+import { Pipe, PipeTransform } from '@angular/core'; @Pipe({ name: 'countdownFormat' }) export class CountdownFormatPipe implements PipeTransform { transform( value: number, type: 'days' | 'hours' | 'minutes' | 'seconds', padZero: boolean = true, showLabel: boolean = true ): string { const formattedValue = padZero ? value.toString().padStart(2, '0') : value.toString(); if (!showLabel) { return formattedValue; } const labels = { days: value === 1 ? 'day' : 'days', hours: 'hours', minutes: 'min', seconds: 'sec' }; return `${formattedValue} ${labels[type]}`; } }
+```
+
+# shared\raceline.otf
+
+This is a binary file of the type: Binary
+
+# shared\services\auth.service.spec.ts
+
+```ts
+import { TestBed } from '@angular/core/testing'; import { AuthService } from './auth.service'; describe('AuthService', () => { let service: AuthService; beforeEach(() => { TestBed.configureTestingModule({}); service = TestBed.inject(AuthService); }); it('should be created', () => { expect(service).toBeTruthy(); }); });
+```
+
+# shared\services\auth.service.ts
+
+```ts
+import { Injectable, NgZone } from '@angular/core'; import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, User as FirebaseUser } from '@angular/fire/auth'; import { BehaviorSubject, Observable } from 'rxjs'; import { Firestore, doc, setDoc, getDoc, collection } from '@angular/fire/firestore'; import { User } from '../models/User'; import { Router } from '@angular/router'; @Injectable({ providedIn: 'root' }) export class AuthService { private _currentUser = new BehaviorSubject<FirebaseUser | null>(null); currentUser = this._currentUser.asObservable(); private _userProfile = new BehaviorSubject<User | null>(null); userProfile = this._userProfile.asObservable(); // Átállítva a helyes "Users" kollekcióra private readonly USERS_COLLECTION = 'Users'; constructor( private auth: Auth, private firestore: Firestore, private router: Router, private ngZone: NgZone // NgZone hozzáadva a Zone probléma kezeléséhez ) { // Listen for authentication state changes within zone onAuthStateChanged(this.auth, (firebaseUser) => { // NgZone-on belül futtatjuk a változtatásokat, hogy az Angular change detection működjön this.ngZone.run(() => { this._currentUser.next(firebaseUser); if (firebaseUser) { // User is signed in, fetch their profile this.getUserProfile(firebaseUser.uid) .then(profile => { this._userProfile.next(profile); }) .catch(error => { console.error('Error fetching user profile:', error); }); } else { // User is signed out this._userProfile.next(null); } }); }); } /** * Create a new user account and save profile data */ async signUp(email: string, password: string, userData: Partial<User>): Promise<void> { try { const userCredential = await createUserWithEmailAndPassword(this.auth, email, password); const uid = userCredential.user.uid; // Create user profile with UID const userProfile: User = { userID: uid, email: email, name: userData.name || { firstname: '', lastname: '' }, favDriverID: userData.favDriverID || '', favTeamID: userData.favTeamID || '' }; // Save user profile to Firestore await this.saveUserProfile(uid, userProfile); // NgZone-on belül frissítjük a state-et this.ngZone.run(() => { this._userProfile.next(userProfile); // Navigate to home after successful signup this.router.navigateByUrl('/home'); }); } catch (error) { throw error; } } /** * Sign in with email and password */ async signIn(email: string, password: string): Promise<void> { try { const userCredential = await signInWithEmailAndPassword(this.auth, email, password); const uid = userCredential.user.uid; // Azonnal lekérjük a felhasználói profilt bejelentkezéskor const profile = await this.getUserProfile(uid); // NgZone-on belül frissítjük a state-et és navigálunk this.ngZone.run(() => { if (profile) { this._userProfile.next(profile); } else { console.error('User profile not found after sign in'); } this.router.navigateByUrl('/home'); }); } catch (error) { throw error; } } /** * Sign out the current user */ async signOut(): Promise<void> { try { // Előbb töröljük a lokális state-et this.ngZone.run(() => { this._userProfile.next(null); }); // Majd kijelentkezünk a Firebase-ből await signOut(this.auth); // NgZone-on belül navigálunk this.ngZone.run(() => { this.router.navigateByUrl('/login'); }); } catch (error) { console.error('Sign out error:', error); throw error; } } /** * Check if user is currently logged in */ isLoggedIn(): boolean { return !!this._currentUser.value; } /** * Get the current Firebase user */ getCurrentFirebaseUser(): FirebaseUser | null { return this._currentUser.value; } /** * Get the current user profile */ getCurrentUserProfile(): User | null { return this._userProfile.value; } /** * Fetch user profile from Firestore */ async getUserProfile(uid: string): Promise<User | null> { try { // Először az új kollekcióból próbáljuk meg betölteni const userRef = doc(this.firestore, `${this.USERS_COLLECTION}/${uid}`); const snapshot = await getDoc(userRef); if (snapshot.exists()) { const data = snapshot.data(); return { ...data, userID: uid } as User; } // Ha nem található, próbáljuk meg a régi kollekcióból const oldUserRef = doc(this.firestore, `users/${uid}`); const oldSnapshot = await getDoc(oldUserRef); if (oldSnapshot.exists()) { const oldData = oldSnapshot.data() as User; // Másoljuk át az adatokat az új kollekcióba await this.saveUserProfile(uid, oldData); return { ...oldData, userID: uid } as User; } return null; } catch (error) { console.error('Error fetching user profile:', error); return Promise.reject(error); } } /** * Save or update user profile to Firestore */ async saveUserProfile(uid: string, data: Partial<User>): Promise<void> { try { // Tisztított adatok, undefined értékek nélkül const cleanedData = Object.entries(data).reduce((acc, [key, value]) => { if (value !== undefined) { acc[key] = value; } return acc; }, {} as Record<string, any>); const userRef = doc(this.firestore, `${this.USERS_COLLECTION}/${uid}`); return setDoc(userRef, cleanedData, { merge: true }); } catch (error) { console.error('Error saving user profile:', error); return Promise.reject(error); } } /** * Update the user profile */ async updateUserProfile(data: Partial<User>): Promise<void> { const user = this.getCurrentFirebaseUser(); if (!user) throw new Error('No authenticated user'); const currentProfile = this._userProfile.value; if (!currentProfile) throw new Error('No user profile'); const updatedProfile = { ...currentProfile, ...data }; await this.saveUserProfile(user.uid, updatedProfile); // NgZone-on belül frissítjük a state-et this.ngZone.run(() => { this._userProfile.next(updatedProfile); }); } }
+```
+
+# shared\services\firestore-data.service.spec.ts
+
+```ts
+import { TestBed } from '@angular/core/testing'; import { FirestoreDataService } from './firestore-data.service'; describe('FirestoreDataService', () => { let service: FirestoreDataService; beforeEach(() => { TestBed.configureTestingModule({}); service = TestBed.inject(FirestoreDataService); }); it('should be created', () => { expect(service).toBeTruthy(); }); });
+```
+
+# shared\services\firestore-data.service.ts
+
+```ts
+import { Injectable } from '@angular/core'; import { Firestore, collectionData, collection, docData, doc } from '@angular/fire/firestore'; import { Driver } from '../models/Driver'; import { Team } from '../models/Team'; import { Track } from '../models/Track'; import { RaceResults } from '../models/RaceResult'; import { Observable } from 'rxjs'; @Injectable({ providedIn: 'root' }) export class FirestoreDataService { constructor(private firestore: Firestore) {} getDrivers(): Observable<Driver[]> { const driversRef = collection(this.firestore, 'Drivers'); return collectionData(driversRef, { idField: 'driverID' }) as Observable<Driver[]>; } getTeams(): Observable<Team[]> { const teamsRef = collection(this.firestore, 'Teams'); return collectionData(teamsRef, { idField: 'teamID' }) as Observable<Team[]>; } getTracks(): Observable<Track[]> { const tracksRef = collection(this.firestore, 'Tracks'); return collectionData(tracksRef, { idField: 'trackID' }) as Observable<Track[]>; } getRaceResults(): Observable<RaceResults[]> { const resultsRef = collection(this.firestore, 'raceResults'); return collectionData(resultsRef, { idField: 'id' }) as Observable<RaceResults[]>; } getRaceResultsByTrack(trackID: string): Observable<RaceResults | undefined> { const resultDoc = doc(this.firestore, `raceResults/${trackID}`); return docData(resultDoc) as Observable<RaceResults | undefined>; } }
+```
+
+# shared\services\standings.service.spec.ts
+
+```ts
+import { TestBed } from '@angular/core/testing'; import { StandingsService } from './standings.service'; describe('StandingsService', () => { let service: StandingsService; beforeEach(() => { TestBed.configureTestingModule({}); service = TestBed.inject(StandingsService); }); it('should be created', () => { expect(service).toBeTruthy(); }); });
+```
+
+# shared\services\standings.service.ts
+
+```ts
+import { Injectable } from '@angular/core'; import { RaceResults } from '../models/RaceResult'; import { Driver, DriverStanding } from '../models/Driver'; import { Team, TeamStanding } from '../models/Team'; import driversData from '../../../../public/data/drivers.json'; import teamsData from '../../../../public/data/teams.json'; import resultsData from '../../../../public/data/raceResults.json'; @Injectable({ providedIn: 'root' }) export class StandingsService { private drivers: Driver[] = driversData; private teams: Team[] = teamsData; private results: RaceResults[] = resultsData as RaceResults[]; constructor() { } getDriverStandings(): DriverStanding[] { const standings = this.drivers.map(driver => ({ driverID: driver.driverID, name: `${driver.name.firstname} ${driver.name.lastname}`, country: driver.country, team: this.getTeamName(driver.teamID), points: 0, wins: 0, podiums: 0 })); this.results.forEach(race => { race.results.forEach(result => { const driverStanding = standings.find(ds => ds.driverID === result.driverID); if (driverStanding) { driverStanding.points += result.points; if(result.fastestLap) driverStanding.points += 1; if (result.position === 1) driverStanding.wins += 1; if (result.position <= 3) driverStanding.podiums += 1; } }); }); return standings.sort((a, b) => b.points - a.points || b.wins - a.wins); } getTeamStandings(): TeamStanding[] { const standings = this.teams.map(team => ({ teamID: team.teamID, name: team.name, points: 0, wins: 0 })); this.results.forEach(race => { race.results.forEach(result => { const driverTeamID = this.getTeamIDByDriverID(result.driverID); if (driverTeamID) { const teamStanding = standings.find(ts => ts.teamID === driverTeamID); if (teamStanding) { teamStanding.points += result.points; if(result.fastestLap) teamStanding.points += 1; if (result.position === 1) teamStanding.wins += 1; } } }); }); return standings.sort((a, b) => b.points - a.points || b.wins - a.wins); } private getTeamName(teamID: string): string { const team = this.teams.find(t => t.teamID === teamID); return team ? team.name : 'Unknown Team'; } private getTeamIDByDriverID(driverID: string): string | undefined { const driver = this.drivers.find(d => d.driverID === driverID); return driver?.teamID; } }
+```
+
+# shared\services\team.service.spec.ts
+
+```ts
+import { TestBed } from '@angular/core/testing'; import { TeamService } from './team.service'; describe('TeamService', () => { let service: TeamService; beforeEach(() => { TestBed.configureTestingModule({}); service = TestBed.inject(TeamService); }); it('should be created', () => { expect(service).toBeTruthy(); }); });
+```
+
+# shared\services\team.service.ts
+
+```ts
+import { Injectable } from '@angular/core'; import { Driver } from '../models/Driver'; import { Team } from '../models/Team'; import driversData from '../../../../public/data/drivers.json'; import teamsData from '../../../../public/data/teams.json'; @Injectable({ providedIn: 'root' }) export class TeamService { private drivers: Driver[] = driversData; private teams: Team[] = teamsData; constructor() { } getDriverById(driverID: string): Driver | undefined { return this.drivers.find(d => d.driverID === driverID); } getTeamById(teamID: string): Team | undefined { return this.teams.find(t => t.teamID === teamID); } getFullName(driverID: string): string { const driver = this.getDriverById(driverID); return driver ? `${driver.name.firstname} ${driver.name.lastname}` : 'Unknown Driver'; } getAllDrivers(): Driver[] { return this.drivers; } getAllTeams(): Team[] { return this.teams; } }
+```
+

@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CountdownFormatPipe } from '../pipes/countdown-format.pipe';
+import { OnChanges, SimpleChanges } from '@angular/core';
+
 
 @Component({
   selector: 'app-countdown',
@@ -9,7 +11,7 @@ import { CountdownFormatPipe } from '../pipes/countdown-format.pipe';
   standalone: true,
   imports: [CommonModule, CountdownFormatPipe],
 })
-export class CountdownComponent implements OnInit, OnDestroy {
+export class CountdownComponent implements OnInit, OnDestroy, OnChanges {
   @Input() targetDates: Date[] = [];
   @Input() restartDelay: number = 10000;
   @Input() raceTimeMessage: string = "It's race time!";
@@ -27,7 +29,15 @@ export class CountdownComponent implements OnInit, OnDestroy {
   constructor() {}
 
   ngOnInit(): void {
-    this.startCountdown();
+    if (this.targetDates?.length) {
+      this.startCountdown();
+    }  
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['targetDates'] && this.targetDates?.length) {
+      this.startCountdown();
+    }
   }
 
   ngOnDestroy(): void {

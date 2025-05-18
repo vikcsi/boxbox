@@ -1,16 +1,12 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CountdownComponent } from '../../shared/countdown/countdown.component';
 import { MatCardModule } from '@angular/material/card';
 import { Track } from '../../shared/models/Track';
 import { Driver } from '../../shared/models/Driver';
-import { RaceResults } from '../../shared/models/RaceResult';
-import tracksData from '../../../../public/data/tracks.json';
-import resultsData from '../../../../public/data/raceResults.json';
-import driversData from '../../../../public/data/drivers.json';
-import { StandingsService } from '../../services/standings.service';
-import { UserService } from '../../services/user.service';
-
+import { FirestoreDataService } from '../../shared/services/firestore-data.service';
+import { AuthService } from '../../shared/services/auth.service';
+import { Subscription } from 'rxjs';
 
 interface LatestRaceResult {
   position: number;
@@ -34,101 +30,114 @@ interface UserFavorites {
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   raceDates: Date[] = [];
   tracks: Track[] = [];
-  drivers: Driver[] = driversData;
+  drivers: Driver[] = [];
   latestResults: LatestRaceResult[] = [];
   latestRaceTrack: Track | null = null;
   isLoggedIn: boolean = false;
-  userFavorites: UserFavorites | null = null
+  userFavorites: UserFavorites | null = null;
+  private userProfileSubscription?: Subscription;
 
   constructor(
-    private standingsService: StandingsService,
-    private userService: UserService,
-  ) { }
-
-  @ViewChild('countdownRef') countdownRef!: CountdownComponent;
-
+    private firestoreService: FirestoreDataService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
-    this.isLoggedIn = this.userService.isLoggedIn();
-    this.loadTracks();
+    this.firestoreService.getTracks().subscribe(tracks => {
+    this.tracks = tracks.map(track => ({
+    ...track,
+    date: track.date instanceof Date ? track.date : new Date(track.date)
+  })).sort((a, b) => a.date.getTime() - b.date.getTime());
+
+    this.raceDates = this.tracks.map(t => t.date);
     this.findLatestRaceResults();
-    
-    if (this.isLoggedIn) {
-      this.loadUserFavorites();
-    }
+});
+
+
+    this.firestoreService.getDrivers().subscribe(drivers => this.drivers = drivers);
+
+    this.userProfileSubscription = this.authService.userProfile.subscribe(profile => {
+      this.isLoggedIn = !!profile;
+      if (profile) this.loadUserFavorites(profile);
+    });
   }
 
-  private loadTracks(): void {
-    this.tracks = tracksData.map(track => {
-      return {
-        ...track,
-        date: new Date(this.formatDate(track.date))
-      } as unknown as Track;
-    }).sort((a, b) => a.date.getTime() - b.date.getTime());
-
-    for (let index = 0; index < this.tracks.length; index++) {
-      this.raceDates[index] = this.tracks[index].date;
-    }
+  ngOnDestroy(): void {
+    this.userProfileSubscription?.unsubscribe();
   }
 
   private findLatestRaceResults(): void {
-    const today = new Date();
-    const completedRaces = this.tracks.filter(track => track.date < today);
+    this.firestoreService.getRaceResults().subscribe(results => {
+      const today = new Date();
+      const completed = this.tracks.filter(track => track.date < today);
+      if (completed.length === 0) return;
 
-    if (completedRaces.length > 0) {
-      const latestRace = completedRaces[completedRaces.length - 1];
-      this.latestRaceTrack = latestRace;
+      const latest = completed[completed.length - 1];
+      this.latestRaceTrack = latest;
 
-      const raceResults = (resultsData as RaceResults[]).find(result =>
-        result.trackID === latestRace.trackID
-      );
-
-      if (raceResults) {
-        const top5Results = raceResults.results
-          .filter(result => result.position <= 5)
-          .sort((a, b) => a.position - b.position);
-
-        this.latestResults = top5Results.map(result => {
-          const driver = this.drivers.find(d => d.driverID === result.driverID);
-          return {
-            position: result.position,
-            driverName: driver ? `${driver.name.firstname} ${driver.name.lastname}` : 'Unknown Driver',
-            driverCountry: driver?.country || '',
-          };
-        });
+      const race = results.find(r => r.trackID === latest.trackID);
+      if (race) {
+        this.latestResults = race.results
+          .filter(r => r.position <= 5)
+          .sort((a, b) => a.position - b.position)
+          .map(r => {
+            const driver = this.drivers.find(d => d.driverID === r.driverID);
+            return {
+              position: r.position,
+              driverName: driver ? `${driver.name.firstname} ${driver.name.lastname}` : 'Unknown',
+              driverCountry: driver?.country || ''
+            };
+          });
       }
-    }
-  }
-
-  private formatDate(dateString: string): string {
-    return dateString.replace(/(\d{4})\.(\d{2})\.(\d{2})\./, '$1-$2-$3');
+    });
   }
 
 
-  private loadUserFavorites(): void {
-    const user = this.userService.getCurrentUser();
-    if (!user) return;
+  private loadUserFavorites(user: any): void {
+  if (!user.favDriverID || !user.favTeamID) return;
 
-    const driverStandings = this.standingsService.getDriverStandings();
-    const teamStandings = this.standingsService.getTeamStandings();
+  this.firestoreService.getDrivers().subscribe(drivers => {
+    this.firestoreService.getTeams().subscribe(teams => {
+      this.firestoreService.getRaceResults().subscribe(results => {
+        const driverMap = new Map<string, number>();
+        const teamMap = new Map<string, number>();
+        const driverPoints: Record<string, number> = {};
+        const teamPoints: Record<string, number> = {};
 
-    const favDriver = driverStandings.find(d => d.driverID === user.favDriverID);
-    const favTeam = teamStandings.find(t => t.teamID === user.favTeamID);
+        results.forEach(race => {
+          race.results.forEach(result => {
+            driverPoints[result.driverID] = (driverPoints[result.driverID] || 0) + result.points;
+            const driver = drivers.find(d => d.driverID === result.driverID);
+            if (driver) {
+              teamPoints[driver.teamID] = (teamPoints[driver.teamID] || 0) + result.points;
+            }
+          });
+        });
 
-    if (favDriver && favTeam) {
-      this.userFavorites = {
-        driverName: favDriver.name,
-        driverPosition: driverStandings.indexOf(favDriver) + 1,
-        driverPoints: favDriver.points,
-        teamName: favTeam.name,
-        teamPosition: teamStandings.indexOf(favTeam) + 1,
-        teamPoints: favTeam.points
-      };
-    }
-  }
+        const sortedDrivers = [...drivers].sort((a, b) => (driverPoints[b.driverID] || 0) - (driverPoints[a.driverID] || 0));
+        const sortedTeams = [...teams].sort((a, b) => (teamPoints[b.teamID] || 0) - (teamPoints[a.teamID] || 0));
+
+        const favDriver = sortedDrivers.find(d => d.driverID === user.favDriverID);
+        const favTeam = sortedTeams.find(t => t.teamID === user.favTeamID);
+
+        if (favDriver && favTeam) {
+          this.userFavorites = {
+            driverName: `${favDriver.name.firstname} ${favDriver.name.lastname}`,
+            driverPosition: sortedDrivers.indexOf(favDriver) + 1,
+            driverPoints: driverPoints[favDriver.driverID] || 0,
+            teamName: favTeam.name,
+            teamPosition: sortedTeams.indexOf(favTeam) + 1,
+            teamPoints: teamPoints[favTeam.teamID] || 0
+          };
+        }
+      });
+    });
+  });
+}
+
 
   getPositionColor(position: number): string {
     const colors = {
