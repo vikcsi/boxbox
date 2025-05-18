@@ -9,20 +9,25 @@ import { RaceResults, Result } from '../../shared/models/RaceResult';
 import { Driver } from '../../shared/models/Driver';
 import { Track } from '../../shared/models/Track';
 import { FirestoreDataService } from '../../shared/services/firestore-data.service';
+import { AddResultComponent } from '../add-result/add-result.component';
 
 @Component({
   selector: 'app-race-results',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatCardModule, MatTableModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, RouterModule, MatCardModule, MatTableModule, MatIconModule, MatButtonModule, AddResultComponent],
   templateUrl: './results.component.html',
   styleUrl: './results.component.scss'
 })
 export class ResultsComponent implements OnInit {
-  trackID: string | null = null;
-  raceResults: Result[] = [];
+  trackId: string = '';
+  
   track: Track | null = null;
   drivers: Driver[] = [];
+  raceResults: Result[] = [];
+  
   displayedColumns: string[] = ['position', 'driver', 'time', 'points', 'fastestLap'];
+  
+  showAddResultForm = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -30,34 +35,64 @@ export class ResultsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.trackID = this.route.snapshot.paramMap.get('id');
-    if (!this.trackID) return;
-
-    this.firestoreService.getDrivers().subscribe(drivers => this.drivers = drivers);
-    this.firestoreService.getTracks().subscribe(tracks => {
-      const match = tracks.find(t => t.trackID === this.trackID);
-      if (match) {
-        this.track = { ...match, date: new Date(match.date) };
-      }
-    });
-
-    this.firestoreService.getRaceResults().subscribe(results => {
-      const race = results.find(r => r.trackID === this.trackID);
-      if (race) this.raceResults = race.results;
+    this.route.paramMap.subscribe(params => {
+      const paramId = params.get('id');
+      if (!paramId) return;
+      
+      this.trackId = paramId;
+      
+      this.loadData();
     });
   }
 
-  getDriverName(driverId: string): string {
-  const driver = this.drivers.find(d => d.driverID === driverId);
-  return driver ? `${driver.name.firstname} ${driver.name.lastname}` : 'Unknown';
-}
+  loadData(): void {
+    this.firestoreService.getDrivers().subscribe(drivers => {
+      this.drivers = drivers;
+      console.log('Betöltött pilóták:', drivers);
+    });
+    
+    this.firestoreService.getTracks().subscribe(tracks => {
+      const track = tracks.find(t => t.trackID === this.trackId);
+      console.log('Talált pálya:', track);
+      if (track) {
+        this.track = { ...track, date: new Date(track.date) };
+      }
+    });
+    
+    console.log('Eredmények lekérése trackId:', this.trackId);
+    this.firestoreService.getResults(this.trackId).subscribe(
+      results => {
+        console.log('Betöltött eredmények:', results);
+        this.raceResults = results;
+      },
+      error => {
+        console.error('Hiba az eredmények betöltésekor:', error);
+      }
+    );
+  }
+  
+  onResultAdded(results: Result[]): void {
+    this.raceResults = results;
+    this.showAddResultForm = false;
+    
+    this.loadData();
+  }
 
-getDriverCountry(driverId: string): string {
-  return this.drivers.find(d => d.driverID === driverId)?.country || 'Unknown';
-}
+  getDriverName(driverId: string): string {
+    const driver = this.drivers.find(d => d.driverID === driverId);
+    return driver ? `${driver.name.firstname} ${driver.name.lastname}` : 'Unknown';
+  }
+
+  getDriverCountry(driverId: string): string {
+    return this.drivers.find(d => d.driverID === driverId)?.country || 'Unknown';
+  }
 
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+  
+  addNewResults(): void {
+    this.showAddResultForm = true;
   }
 }

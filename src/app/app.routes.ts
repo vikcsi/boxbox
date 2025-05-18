@@ -47,6 +47,11 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/results/results.component').then(m => m.ResultsComponent),
         canActivate: [authGuard]
     },
+    {   
+        path: 'results/:raceId/add',
+        loadComponent: () => import('./pages/add-result/add-result.component').then(m => m.AddResultComponent),
+        canActivate: [authGuard]
+    },
     {
         path: '',
         redirectTo: 'home',

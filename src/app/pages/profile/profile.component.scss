@@ -1,76 +1,134 @@
 .profile-container {
-    margin-top: 50px;
-    padding: 24px;
-    display: flex;
-    justify-content: center;
+  margin-top: 50px;
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-card {
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #ffedea;
+}
+
+.profile-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #8d0000;
+  color: white;
+
+  mat-icon {
+    transform: scale(1.8);
   }
-  
-  .profile-card {
-    max-width: 600px;
-    width: 100%;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  
-  .profile-avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
+}
+
+.profile-details {
+  padding: 16px;
+
+  .detail-row {
     display: flex;
     align-items: center;
-    justify-content: center;
-    background-color: #8d0000;
-    color: white;
-  
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 16px;
+
     mat-icon {
-      transform: scale(1.8);
+      color: #8d0000;
     }
   }
-  
-  .profile-details {
-    padding: 16px;
-  
-    .detail-row {
+}
+
+.favorites-section {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+
+  h3 {
+    color: #8d0000;
+    margin-bottom: 16px;
+  }
+
+  .favorite-item {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 8px;
+    border-radius: 8px;
+    background-color: #8d000063;
+    transition: all 0.3s;
+
+    &:hover {
+      background-color: #8d00009e;
+      transform: translateX(4px);
+    }
+
+    mat-icon {
+      color: #7e0000;
+    }
+  }
+}
+
+.edit-form {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+
+  form {
+    width: 100%;
+    max-width: 450px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    mat-form-field {
+      width: 100%;
+    }
+
+    .button-row {
       display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-      font-size: 16px;
-  
-      mat-icon {
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+
+      button {
+        font-weight: 600;
+      }
+
+      button[type="submit"] {
+        background-color: #8d0000;
+        color: white;
+      }
+
+      button[type="button"] {
         color: #8d0000;
       }
     }
   }
-  
-  .favorites-section {
-    margin-top: 24px;
-    padding-top: 16px;
-    border-top: 1px solid #eee;
-  
-    h3 {
-      color: #8d0000;
-      margin-bottom: 16px;
+}
+
+/* Mobil optimalizálás */
+@media (max-width: 555px) {
+  .edit-form {
+    form {
+      max-width: 80%;
     }
-  
-    .favorite-item {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 12px;
-      padding: 8px;
-      border-radius: 8px;
-      background-color: #8d000063;
-      transition: all 0.3s;
-  
-      &:hover {
-        background-color: #8d00009e;
-        transform: translateX(4px);
-      }
-  
-      mat-icon {
-        color: #7e0000;
+
+    .button-row {
+      flex-direction: column;
+      align-items: stretch;
+
+      button {
+        width: 100%;
       }
     }
   }
+}

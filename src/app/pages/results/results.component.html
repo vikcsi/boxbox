@@ -1,60 +1,75 @@
 <div class="results-container">
   @if (track) {
-  <div class="race-header">
-    <h1>{{ track.trackName }} Results</h1>
-    <h2>{{ track.country }} - {{ formatDate(track.date.toString()) }}</h2>
-    <button mat-button class="butt" routerLink="/tracks">Back to Tracks</button>
-  </div>
+    <div class="race-header">
+      <h1>{{ track.trackName }} Results</h1>
+      <h2>{{ track.country }} - {{ formatDate(track.date.toString()) }}</h2>
+      <button mat-button class="butt" routerLink="/tracks">Back to Tracks</button>
+    </div>
   }
 
-  @if (raceResults.length) {
-  <mat-card>
-    <mat-card-content>
-      <table mat-table [dataSource]="raceResults" class="results-table">
-        <ng-container matColumnDef="position">
-          <th mat-header-cell *matHeaderCellDef> Position </th>
-          <td mat-cell *matCellDef="let result"> {{ result.position }} </td>
-        </ng-container>
+  <!-- Ha vannak eredmények, megjelenítjük őket -->
+  @if (raceResults.length > 0) {
+    <mat-card>
+      <mat-card-content>
+        <table mat-table [dataSource]="raceResults" class="results-table">
+          <ng-container matColumnDef="position">
+            <th mat-header-cell *matHeaderCellDef> Position </th>
+            <td mat-cell *matCellDef="let result"> {{ result.position }} </td>
+          </ng-container>
 
-        <ng-container matColumnDef="driver">
-          <th mat-header-cell *matHeaderCellDef> Driver </th>
-          <td mat-cell *matCellDef="let result">
-            {{ getDriverName(result.driverID) }}
-            <div class="driver-country">{{ getDriverCountry(result.driverID) }}</div>
-          </td>
-        </ng-container>
+          <ng-container matColumnDef="driver">
+            <th mat-header-cell *matHeaderCellDef> Driver </th>
+            <td mat-cell *matCellDef="let result">
+              {{ getDriverName(result.driverID) }}
+              <div class="driver-country">{{ getDriverCountry(result.driverID) }}</div>
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="time">
-          <th mat-header-cell *matHeaderCellDef> Race Time </th>
-          <td mat-cell *matCellDef="let result"> {{ result.time }} </td>
-        </ng-container>
+          <ng-container matColumnDef="time">
+            <th mat-header-cell *matHeaderCellDef> Race Time </th>
+            <td mat-cell *matCellDef="let result"> {{ result.time }} </td>
+          </ng-container>
 
-        <ng-container matColumnDef="points">
-          <th mat-header-cell *matHeaderCellDef> Points </th>
-          <td mat-cell *matCellDef="let result"> {{ result.points }} </td>
-        </ng-container>
+          <ng-container matColumnDef="points">
+            <th mat-header-cell *matHeaderCellDef> Points </th>
+            <td mat-cell *matCellDef="let result"> {{ result.points }} </td>
+          </ng-container>
 
-        <ng-container matColumnDef="fastestLap">
-          <th mat-header-cell *matHeaderCellDef> Fastest Lap </th>
-          <td mat-cell *matCellDef="let result">
-            @if (result.fastestLap) {
-            <mat-icon color="accent">timer</mat-icon>
-            }
-          </td>
-        </ng-container>
+          <ng-container matColumnDef="fastestLap">
+            <th mat-header-cell *matHeaderCellDef> Fastest Lap </th>
+            <td mat-cell *matCellDef="let result">
+              @if (result.fastestLap) {
+                <mat-icon color="accent">timer</mat-icon>
+              }
+            </td>
+          </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="{
-      'gold': row.position === 1,
-      'silver': row.position === 2,
-      'bronze': row.position === 3
-    }">
-      </table>
-    </mat-card-content>
-  </mat-card>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="{
+            'gold': row.position === 1,
+            'silver': row.position === 2,
+            'bronze': row.position === 3
+          }"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
   } @else {
-  <div class="no-results">
-    <p>No results available for this race.</p>
-  </div>
+    <div class="no-results">
+      <p>No results available for this race.</p>
+      <button mat-raised-button color="primary" (click)="addNewResults()">
+        Add Results
+      </button>
+    </div>
+  }
+
+  <!-- Az Add Result komponens csak akkor jelenik meg, ha a showAddResultForm igaz -->
+  @if (showAddResultForm) {
+    <div class="results-wrapper">
+      <app-add-result 
+        [trackId]="trackId" 
+        [cancelLink]="['/tracks', trackId]"
+        (resultAdded)="onResultAdded($event)">
+      </app-add-result>
+    </div>
   }
 </div>

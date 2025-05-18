@@ -1,0 +1,63 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="add-result-form">
+
+  <h2>Race Results (Top 10)</h2>
+
+  <div [formArrayName]="'results'">
+    @for (group of resultsFormArray; track $index) {
+      <div [formGroupName]="$index" class="result-row">
+
+        <!-- Pozíció -->
+        <mat-form-field appearance="outline">
+          <mat-label>Place</mat-label>
+          <input matInput formControlName="position" readonly>
+        </mat-form-field>
+
+        <!-- Pilóta kiválasztás -->
+        <mat-form-field appearance="outline">
+          <mat-label>Driver</mat-label>
+          <mat-select formControlName="driverID" required>
+            @for (d of drivers; track d.driverID) {
+              <mat-option [value]="d.driverID">{{ d.name.firstname }} {{ d.name.lastname }}</mat-option>
+            }
+          </mat-select>
+          <mat-error *ngIf="group.get('driverID')?.hasError('required') && group.get('driverID')?.touched">
+           Must select a Driver!
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Lap time</mat-label>
+          <input matInput formControlName="time" placeholder="1:32.158" required>
+          <mat-error *ngIf="group.get('time')?.hasError('required') && group.get('time')?.touched">
+            Must add a Lap Time!
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Point</mat-label>
+          <input matInput type="number" formControlName="points" min="0">
+          <mat-error *ngIf="group.get('points')?.hasError('min')">
+            Point must be positive!
+          </mat-error>
+        </mat-form-field>
+
+        <div class="fastest-lap-container">
+          <mat-checkbox
+            formControlName="fastestLap"
+            [disabled]="fastestLapAlreadySet && !group.get('fastestLap')?.value">
+            ⚡️ Fastest Lap
+          </mat-checkbox>
+        </div>
+
+      </div>
+    }
+  </div>
+
+  <div class="actions">
+    <button mat-button [routerLink]="cancelLink" type="button">Mégse</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+      Mentés
+    </button>
+  </div>
+
+</form>

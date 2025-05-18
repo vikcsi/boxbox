@@ -1,0 +1,61 @@
+.add-result-form {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: white;
+}
+
+h2 {
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
+.result-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+mat-form-field {
+  &:nth-child(1) { /* Position */
+    width: 80px;
+  }
+
+  &:nth-child(2) { /* Driver */
+    width: 230px;
+  }
+
+  &:nth-child(3) { /* Time */
+    width: 120px;
+  }
+
+  &:nth-child(4) { /* Points */
+    width: 80px;
+  }
+}
+
+.fastest-lap-container {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+@media (max-width: 768px) {
+  .result-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  mat-form-field {
+    width: 100% !important;
+  }
+}
