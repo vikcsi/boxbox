@@ -49,7 +49,7 @@ export class AddResultComponent implements OnInit {
           position: this.fb.control(i + 1, { validators: [Validators.min(1)] }),
           points: this.fb.control(this.calculateDefaultPoints(i + 1), { validators: [Validators.min(0)] }),
           time: ['', Validators.required],
-          fastestLap: [false]
+          fastestLap: [false, Validators.required]
         })
       )
     )
@@ -58,17 +58,11 @@ export class AddResultComponent implements OnInit {
   ngOnInit(): void {
     this.data.getDrivers().subscribe(drivers => {
       this.drivers = drivers;
-      console.log('Betöltött pilóták (add-result):', drivers);
     });
 
     this.data.getResults(this.trackId).subscribe(results => {
       this.existingResults = results;
-      console.log('Betöltött eredmények (add-result):', results);
       this.fastestLapAlreadySet = results.some(r => r.fastestLap === true);
-      
-      if (results.length > 0) {
-        this.populateFormWithExistingResults(results);
-      }
     });
 
     this.resultsFormArray.forEach((group, index) => {
@@ -95,26 +89,6 @@ export class AddResultComponent implements OnInit {
     });
   }
 
-  private populateFormWithExistingResults(results: Result[]): void {
-    const formArray = this.form.get('results') as FormArray;
-    
-    const sortedResults = [...results].sort((a, b) => 
-      (a.position || 999) - (b.position || 999)
-    );
-
-    formArray.controls.forEach((group, index) => {
-      const result = sortedResults.find(r => r.position === index + 1);
-      if (result) {
-        group.patchValue({
-          driverID: result.driverID,
-          position: result.position,
-          points: result.points,
-          time: result.time,
-          fastestLap: result.fastestLap || false
-        });
-      }
-    });
-  }
 
   async save() {
     if (this.form.invalid) {
@@ -138,11 +112,9 @@ export class AddResultComponent implements OnInit {
     }));
 
     try {
-      console.log('Eredmények mentése:', results);
       await this.data.setRaceResults(this.trackId, results);
       this.resultAdded.emit(results);
     } catch (error) {
-      console.error('Hiba történt a mentés során:', error);
     }
   }
 

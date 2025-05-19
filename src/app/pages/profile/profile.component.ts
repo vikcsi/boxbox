@@ -15,6 +15,7 @@ import { Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 
+
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -30,6 +31,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
   teams: Team[] = [];
   private userSubscription?: Subscription;
   isEditing = false;
+  isDeleteConfirmOpen = false;
+  isProcessing = false;
   editForm!: FormGroup;
 
   constructor(
@@ -69,37 +72,65 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   initForm(): void {
-  this.editForm = this.fb.group({
-    firstname: [this.user?.name?.firstname || '', [Validators.required, Validators.minLength(2)]],
-    lastname: [this.user?.name?.lastname || '', [Validators.required, Validators.minLength(2)]],
-    favDriverID: [this.user?.favDriverID || '', Validators.required],
-    favTeamID: [this.user?.favTeamID || '', Validators.required]
-  });
-}
-
-toggleEdit(): void {
-  this.isEditing = !this.isEditing;
-  if (this.isEditing) {
-    this.initForm(); 
+    this.editForm = this.fb.group({
+      firstname: [this.user?.name?.firstname || '', [Validators.required, Validators.minLength(2)]],
+      lastname: [this.user?.name?.lastname || '', [Validators.required, Validators.minLength(2)]],
+      favDriverID: [this.user?.favDriverID || '', Validators.required],
+      favTeamID: [this.user?.favTeamID || '', Validators.required]
+    });
   }
-}
 
-async saveProfile(): Promise<void> {
-  if (this.editForm.invalid) return;
-
-  const updatedData: Partial<User> = {
-    name: {
-      firstname: this.editForm.value.firstname,
-      lastname: this.editForm.value.lastname
-    },
-    favDriverID: this.editForm.value.favDriverID,
-    favTeamID: this.editForm.value.favTeamID
-  };
-
-  try {
-    await this.authService.updateUserProfile(updatedData);
-    this.isEditing = false;
-  } catch (error) {
+  toggleEdit(): void {
+    this.isEditing = !this.isEditing;
+    if (this.isEditing) {
+      this.initForm(); 
+    }
   }
-}
+
+  async saveProfile(): Promise<void> {
+    if (this.editForm.invalid) return;
+
+    const updatedData: Partial<User> = {
+      name: {
+        firstname: this.editForm.value.firstname,
+        lastname: this.editForm.value.lastname
+      },
+      favDriverID: this.editForm.value.favDriverID,
+      favTeamID: this.editForm.value.favTeamID
+    };
+
+    try {
+      await this.authService.updateUserProfile(updatedData);
+      this.isEditing = false;
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    }
+  }
+
+  
+  confirmDelete(): void {
+    this.isDeleteConfirmOpen = true;
+  }
+
+  
+  cancelDelete(): void {
+    this.isDeleteConfirmOpen = false;
+  }
+
+
+  async deleteAccount(): Promise<void> {
+    if (this.isProcessing) return;
+    
+    this.isProcessing = true;
+    
+    try {
+      await this.authService.deleteUserAccount();
+      console.log('Account successfully deleted');
+    } catch (error: unknown) {
+      console.error('Error deleting account:', error);
+    } finally {
+      this.isProcessing = false;
+      this.isDeleteConfirmOpen = false;
+    }
+  }
 }

@@ -6,13 +6,11 @@
     @for (group of resultsFormArray; track $index) {
       <div [formGroupName]="$index" class="result-row">
 
-        <!-- Pozíció -->
         <mat-form-field appearance="outline">
           <mat-label>Place</mat-label>
           <input matInput formControlName="position" readonly>
         </mat-form-field>
 
-        <!-- Pilóta kiválasztás -->
         <mat-form-field appearance="outline">
           <mat-label>Driver</mat-label>
           <mat-select formControlName="driverID" required>
@@ -35,10 +33,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Point</mat-label>
-          <input matInput type="number" formControlName="points" min="0">
-          <mat-error *ngIf="group.get('points')?.hasError('min')">
-            Point must be positive!
-          </mat-error>
+          <input matInput formControlName="points" readonly>
         </mat-form-field>
 
         <div class="fastest-lap-container">

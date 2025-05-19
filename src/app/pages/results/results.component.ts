@@ -5,7 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { RaceResults, Result } from '../../shared/models/RaceResult';
+import { Result } from '../../shared/models/RaceResult';
 import { Driver } from '../../shared/models/Driver';
 import { Track } from '../../shared/models/Track';
 import { FirestoreDataService } from '../../shared/services/firestore-data.service';

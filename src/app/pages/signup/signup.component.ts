@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -13,6 +13,7 @@ import { User } from '../../shared/models/User';
 import { Driver } from '../../shared/models/Driver';
 import { Team } from '../../shared/models/Team';
 import { AuthService } from '../../shared/services/auth.service';
+import { FirestoreDataService } from '../../shared/services/firestore-data.service';
 
 @Component({
   selector: 'app-signup',
@@ -32,7 +33,7 @@ import { AuthService } from '../../shared/services/auth.service';
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss'
 })
-export class SignupComponent {
+export class SignupComponent implements OnInit{
   signUpForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
@@ -52,7 +53,18 @@ export class SignupComponent {
   isLoading = false;
   signupError = '';
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private firestoreService: FirestoreDataService
+  ) {}
+
+  ngOnInit(): void {
+    this.firestoreService.getDrivers().subscribe(drivers => {
+      this.drivers = drivers;
+    });
+
+    this.firestoreService.getTeams().subscribe(teams => {
+      this.teams = teams;
+    });
+  }
 
   async signup(): Promise<void> {
     if (this.signUpForm.invalid) {
@@ -86,7 +98,6 @@ export class SignupComponent {
 
     try {
       await this.authService.signUp(email, pw, userData);
-      // Navigation is handled in the AuthService
     } catch (error: any) {
       this.signupError = this.getFirebaseErrorMessage(error.code);
       this.showForm = true;

@@ -63,7 +63,6 @@ export class StandingsComponent implements OnInit {
 
     for (const result of this.results) {
       for (const entry of result.results) {
-        // Driver standings
         if (!driverMap[entry.driverID]) {
           const driver = this.drivers.find(d => d.driverID === entry.driverID);
           if (!driver) continue;
@@ -85,7 +84,6 @@ export class StandingsComponent implements OnInit {
           driverMap[entry.driverID].podiums++;
         }
 
-        // Team standings
         const driver = this.drivers.find(d => d.driverID === entry.driverID);
         if (driver) {
           const teamID = driver.teamID;

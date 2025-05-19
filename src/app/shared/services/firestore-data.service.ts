@@ -10,7 +10,6 @@ import { Driver } from '../models/Driver';
 import { Team } from '../models/Team';
 import { Track } from '../models/Track';
 import { Result, RaceResults } from '../models/RaceResult';
-import { resultConverter } from '../models/result.converter';
 import { Observable, map } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
